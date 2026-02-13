@@ -1,0 +1,227 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-blue-300 flex items-center justify-center p-4 relative overflow-hidden">
+  <!-- Confetti Container -->
+  <div class="fixed inset-0 pointer-events-none">
+    <div 
+      *ngFor="let particle of confettiPieces"
+      class="confetti-particle fixed"
+      [style.left.%]="particle.left"
+      [style.animation-delay.s]="particle.delay"
+      [style.animation-duration.s]="particle.duration"
+      [style.opacity]="particle.opacity"
+      [style.font-size.px]="particle.size"
+    >
+      {{ particle.emoji }}
+    </div>
+  </div>
+
+  <!-- Floating Background Elements -->
+  <div class="absolute top-10 left-10 w-32 h-32 bg-white rounded-full opacity-20 animate-bounce" style="animation-duration: 3s;"></div>
+  <div class="absolute bottom-20 right-10 w-40 h-40 bg-white rounded-full opacity-15 animate-bounce" style="animation-duration: 4s;"></div>
+  <div class="absolute top-1/3 right-20 w-24 h-24 bg-white rounded-full opacity-20 animate-bounce" style="animation-duration: 2s;"></div>
+
+  <!-- Main Content -->
+  <div class="relative z-10 text-center max-w-2xl">
+    <!-- Animated Cartoon Characters -->
+    <div class="mb-8 relative h-64 flex items-center justify-center">
+      <!-- Happy Character (waving goodbye) -->
+      <svg 
+        class="w-48 h-48 mr-4 cursor-pointer transition-transform duration-300 group hover:scale-110"
+        [class.character-clicked]="characterClicked"
+        (click)="handleCharacterClick()"
+        viewBox="0 0 200 200" 
+        xmlns="http://www.w3.org/2000/svg">
+        <!-- Head -->
+        <circle cx="100" cy="60" r="35" fill="#FFD700" class="character-bounce" style="animation: characterBounce 2s ease-in-out infinite;"/>
+        
+        <!-- Face Details -->
+        <circle cx="90" cy="50" r="5" fill="#000"/>
+        <circle cx="110" cy="50" r="5" fill="#000"/>
+        
+        <!-- Happy Smile -->
+        <path d="M 90 65 Q 100 75 110 65" stroke="#000" stroke-width="2" fill="none"/>
+        
+        <!-- Body -->
+        <rect x="75" y="100" width="50" height="50" rx="10" fill="#FF6B9D"/>
+        
+        <!-- Left Arm (waving) -->
+        <line x1="75" y1="110" x2="40" y2="90" stroke="#FFD700" stroke-width="8" stroke-linecap="round" class="wave-arm"/>
+        <circle cx="35" cy="85" r="8" fill="#FFD700"/>
+        
+        <!-- Right Arm -->
+        <line x1="125" y1="110" x2="145" y2="130" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+        <circle cx="150" cy="135" r="8" fill="#FFD700"/>
+        
+        <!-- Legs -->
+        <line x1="85" y1="150" x2="80" y2="180" stroke="#4A90E2" stroke-width="8" stroke-linecap="round"/>
+        <line x1="115" y1="150" x2="120" y2="180" stroke="#4A90E2" stroke-width="8" stroke-linecap="round"/>
+        
+        <!-- Feet -->
+        <circle cx="80" cy="185" r="6" fill="#FFD700"/>
+        <circle cx="120" cy="185" r="6" fill="#FFD700"/>
+      </svg>
+
+      <!-- Click Hint -->
+      <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full mt-2 opacity-60 text-white text-xs font-semibold whitespace-nowrap animate-pulse">
+        👆 Click for celebration!
+      </div>
+
+      <!-- Cloud with thumbs up -->
+      <div class="absolute top-0 right-0 animate-float">
+        <svg class="w-32 h-32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- Cloud -->
+          <path d="M 20 50 Q 20 30 40 30 Q 50 20 60 30 Q 80 30 80 50 Z" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+          
+          <!-- Thumbs Up -->
+          <g transform="translate(30, 50)">
+            <rect x="2" y="0" width="8" height="12" rx="2" fill="#FFD700"/>
+            <circle cx="6" cy="-2" r="4" fill="#FFD700"/>
+            <path d="M 12 8 Q 18 6 20 10" stroke="#FFD700" stroke-width="2" fill="none"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Text Content -->
+    <div class="mb-8">
+      <h1 class="text-5xl font-bold text-white mb-4 drop-shadow-lg animate-fade-in">
+        See You Soon! 👋
+      </h1>
+      <p class="text-xl text-white drop-shadow-md mb-6 animate-fade-in-delay">
+        You have been successfully logged out
+      </p>
+      <div class="inline-block bg-white bg-opacity-90 rounded-full px-8 py-3 drop-shadow-lg">
+        <p class="text-lg font-semibold text-purple-600">
+          Redirecting in <span class="text-2xl font-bold text-pink-500">{{ countdown }}</span> seconds...
+        </p>
+      </div>
+    </div>
+
+    <!-- Redirect Button -->
+    <div class="mt-8 space-y-4">
+      <button
+        (click)="handleReturnToLogin()"
+        class="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold px-8 py-3 rounded-full hover:shadow-xl transform hover:scale-105 transition-all duration-300 drop-shadow-lg"
+      >
+        Return to Login Now
+      </button>
+
+      <!-- Floating stars animation -->
+      <div class="flex justify-center gap-4 mt-6">
+        <span class="text-3xl animate-pulse">⭐</span>
+        <span class="text-3xl animate-pulse" style="animation-delay: 0.2s;">✨</span>
+        <span class="text-3xl animate-pulse" style="animation-delay: 0.4s;">⭐</span>
+      </div>
+    </div>
+
+    <!-- Click Counter (shows when user interacts) -->
+    <div *ngIf="clickCount > 0" class="mt-8 text-white text-sm opacity-75 animate-fade-in">
+      <p class="font-semibold">Celebration triggered {{ clickCount }} {{ clickCount === 1 ? 'time' : 'times' }} 🎉</p>
+    </div>
+  </div>
+
+  <!-- CSS Animations (inline for scope) -->
+  <style>
+    @keyframes characterBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    @keyframes wave-arm {
+      0%, 100% { transform-origin: 75px 110px; transform: rotate(0deg); }
+      50% { transform-origin: 75px 110px; transform: rotate(30deg); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fade-in-delay {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        top: -20px;
+        opacity: 1;
+        transform: translateX(0) rotateZ(0deg) scale(1);
+      }
+      100% {
+        top: 100vh;
+        opacity: 0;
+        transform: translateX(100px - 200px * random()) rotateZ(720deg) scale(0);
+      }
+    }
+
+    .confetti-particle {
+      position: fixed;
+      top: -20px;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .confetti-particle {
+      animation: confetti-fall linear forwards;
+    }
+
+    .animate-bounce {
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .wave-arm {
+      animation: waveArm 1s ease-in-out infinite;
+      transform-origin: 75px 110px;
+    }
+
+    @keyframes waveArm {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(30deg); }
+    }
+
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .animate-fade-in {
+      animation: fade-in 1s ease-out;
+    }
+
+    .animate-fade-in-delay {
+      animation: fade-in-delay 1.2s ease-out;
+    }
+
+    /* Character click animation */
+    svg.character-clicked {
+      animation: characterClickPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes characterClickPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</div>

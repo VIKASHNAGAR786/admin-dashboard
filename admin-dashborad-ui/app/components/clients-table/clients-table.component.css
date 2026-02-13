@@ -1,0 +1,163 @@
+/* Clients Table Component Styles */
+
+:host {
+  display: block;
+}
+
+:host ::ng-deep {
+  /* Table base styling */
+  table {
+    border-collapse: collapse;
+    animation: slideInDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  /* Header styling */
+  thead {
+    position: relative;
+    z-index: 10;
+  }
+
+  th {
+    transition: all 0.2s ease;
+    color: #374151;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  /* Table cell styling */
+  td {
+    transition: all 0.2s ease;
+    vertical-align: middle;
+  }
+
+  /* Table rows with animation */
+  tbody tr {
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation: rowFadeIn 0.4s ease-out;
+  }
+
+  tbody tr:hover {
+    background-color: #f0f9ff;
+  }
+
+  /* Action buttons */
+  button[type="button"] {
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button[type="button"]:hover {
+    transform: scale(1.15) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  }
+
+  /* Badge styling */
+  [class*="badge"], 
+  span[class*="px-3"] {
+    transition: all 0.2s ease;
+  }
+
+  /* Plan badge colors */
+  .bg-blue-100 {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.1));
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
+  .bg-green-100 {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(134, 239, 172, 0.1));
+    border: 1px solid rgba(34, 197, 94, 0.2);
+  }
+
+  .bg-amber-100 {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.1), rgba(253, 224, 71, 0.1));
+    border: 1px solid rgba(217, 119, 6, 0.2);
+  }
+
+  /* Module badges with animation */
+  .rounded-full {
+    animation: badgeSlide 0.3s ease-out;
+  }
+
+  .rounded-full:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.15);
+  }
+
+  /* Empty state styling */
+  svg {
+    transition: all 0.3s ease;
+  }
+
+  /* Code blocks */
+  code {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* Responsive text sizing */
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
+/* Animations */
+@keyframes slideInDown {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rowFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes badgeSlide {
+  0% {
+    transform: translateX(-8px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Hover effect for row interaction */
+tbody tr {
+  cursor: pointer;
+}
+
+/* Focus states for accessibility */
+button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

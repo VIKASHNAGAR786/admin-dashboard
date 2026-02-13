@@ -1,0 +1,128 @@
+<div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+  <!-- Table Header -->
+  <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6">
+    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 3H5a2 2 0 0 0-2 2v4m0 0a9 9 0 0 0 18 0m0 0V5a2 2 0 0 0-2-2h-4m0 0a9 9 0 0 1-18 0"></path>
+      </svg>
+      Client Management
+    </h3>
+  </div>
+
+  <!-- Table Container -->
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <!-- Enhanced Table Head -->
+      <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Company</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Plan</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Start Date</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Expiration</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Days Left</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Modules</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">API Key</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+
+      <!-- Enhanced Table Body -->
+      <tbody>
+        <tr 
+          *ngFor="let client of clients; let last = last" 
+          [class.border-b]="!last"
+          class="hover:bg-blue-50 transition-colors duration-200 group border-b border-gray-200">
+          
+          <!-- Company Name -->
+          <td class="px-6 py-4">
+            <div class="font-semibold text-gray-900">{{ client.companyName }}</div>
+            <div class="text-xs text-gray-500 mt-1">ID: {{ client.id }}</div>
+          </td>
+
+          <!-- Plan -->
+          <td class="px-6 py-4">
+            <span [ngClass]="getPlanBadgeClass(client.plan)" class="inline-block px-3 py-1 rounded-full text-xs font-bold">
+              {{ client.plan }}
+            </span>
+          </td>
+
+          <!-- Start Date -->
+          <td class="px-6 py-4">
+            <div class="text-sm text-gray-700 font-medium">{{ formatDate(client.startDate) }}</div>
+          </td>
+
+          <!-- Expiration Date -->
+          <td class="px-6 py-4">
+            <div class="text-sm text-gray-700 font-medium">{{ formatDate(client.expirationDate) }}</div>
+          </td>
+
+          <!-- Remaining Days -->
+          <td class="px-6 py-4">
+            <span [ngClass]="getRemainingDaysClass(client.expirationDate)" class="inline-block px-3 py-1 rounded-lg text-xs font-bold">
+              {{ getDaysText(client.expirationDate) }}
+            </span>
+          </td>
+
+          <!-- Status -->
+          <td class="px-6 py-4">
+            <span [ngClass]="getStatusBadgeClass(client.status)" class="inline-block px-3 py-1 rounded-lg text-xs font-bold">
+              {{ client.status }}
+            </span>
+          </td>
+
+          <!-- Modules -->
+          <td class="px-6 py-4">
+            <div class="flex flex-wrap gap-2 max-w-[220px]">
+              <span 
+                *ngFor="let module of client.modules" 
+                class="text-xs font-medium bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 px-3 py-1 rounded-full border border-purple-200 whitespace-nowrap">
+                {{ module }}
+              </span>
+            </div>
+          </td>
+
+          <!-- Access Key -->
+          <td class="px-6 py-4">
+            <code class="text-xs bg-gray-100 border border-gray-300 text-gray-700 px-3 py-1 rounded-md font-mono">
+              {{ client.accessKey.substring(0, 8) }}...
+            </code>
+          </td>
+
+          <!-- Actions -->
+          <td class="px-6 py-4">
+            <button 
+              (click)="openDialog(client)" 
+              class="p-2 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-blue-600 hover:text-blue-700 opacity-0 group-hover:opacity-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </td>
+        </tr>
+
+        <!-- Empty State -->
+        <tr *ngIf="!clients || clients.length === 0">
+          <td colspan="9" class="px-6 py-12 text-center">
+            <div class="flex flex-col items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+              </svg>
+              <p class="text-gray-500 font-medium">No clients found</p>
+              <p class="text-gray-400 text-sm">Create a new client to get started</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Client Details Dialog -->
+<app-client-details-dialog 
+  [client]="selectedClient" 
+  [isOpen]="isDialogOpen"
+  (closeEvent)="closeDialog()">
+</app-client-details-dialog>

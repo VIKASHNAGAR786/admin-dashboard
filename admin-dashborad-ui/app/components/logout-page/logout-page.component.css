@@ -1,0 +1,183 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes waveArm {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(30deg);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDelay {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.wave-arm {
+  animation: waveArm 1s ease-in-out infinite;
+  transform-origin: 75px 110px;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out;
+}
+
+.animate-fade-in-delay {
+  animation: fadeInDelay 1.2s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.character-bounce {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+/* Confetti Animations */
+@keyframes confetti-fall {
+  0% {
+    top: -50px;
+    opacity: 1;
+    transform: translateX(0) rotateZ(0deg) rotateX(0deg) scale(1);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: 100vh;
+    opacity: 0;
+    transform: translateX(calc(sin(var(--offset)) * 150px)) rotateZ(720deg) rotateX(360deg) scale(0.1);
+  }
+}
+
+.confetti-particle {
+  position: fixed;
+  top: -50px;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: confetti-fall-smooth linear forwards;
+  font-weight: bold;
+  line-height: 1;
+}
+
+@keyframes confetti-fall-smooth {
+  0% {
+    top: -50px;
+    opacity: 1;
+    transform: translateX(0) rotateZ(0deg) translateY(0);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    top: 100vh;
+    opacity: 0;
+    transform: translateX(var(--tx, 0)) rotateZ(720deg) translateY(0);
+  }
+}
+
+.confetti-particle:nth-child(1) {
+  --tx: 120px;
+}
+.confetti-particle:nth-child(2) {
+  --tx: -120px;
+}
+.confetti-particle:nth-child(3) {
+  --tx: 80px;
+}
+.confetti-particle:nth-child(4) {
+  --tx: -80px;
+}
+.confetti-particle:nth-child(5) {
+  --tx: 140px;
+}
+.confetti-particle:nth-child(6) {
+  --tx: -140px;
+}
+
+/* Character click animation */
+svg.character-clicked {
+  animation: characterClickPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes characterClickPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

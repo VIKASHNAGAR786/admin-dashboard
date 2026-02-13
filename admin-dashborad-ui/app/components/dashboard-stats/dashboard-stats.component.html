@@ -1,0 +1,76 @@
+<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+  <!-- Total Clients Card -->
+  <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-md p-6 border border-blue-100 hover:shadow-lg hover:border-blue-300 transition-all duration-300 transform hover:scale-105">
+    <div class="flex justify-between items-start mb-4">
+      <div>
+        <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Clients</p>
+        <div class="text-3xl font-bold text-gray-900 mt-2">{{ getTotalClients() }}</div>
+      </div>
+      <div class="p-3 bg-blue-100 rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+    </div>
+    <p class="text-xs text-gray-500 font-medium">Across all plans</p>
+  </div>
+
+  <!-- Active Clients Card -->
+  <div class="bg-gradient-to-br from-white to-green-50 rounded-xl shadow-md p-6 border border-green-100 hover:shadow-lg hover:border-green-300 transition-all duration-300 transform hover:scale-105">
+    <div class="flex justify-between items-start mb-4">
+      <div>
+        <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Active Clients</p>
+        <div class="text-3xl font-bold text-gray-900 mt-2">{{ getActiveClients() }}</div>
+      </div>
+      <div class="p-3 bg-green-100 rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+          <circle cx="12" cy="12" r="10"></circle>
+        </svg>
+      </div>
+    </div>
+    <p class="text-xs text-gray-500 font-medium">Currently subscribed</p>
+  </div>
+
+  <!-- Expiring Soon Card -->
+  <div class="bg-gradient-to-br from-white to-amber-50 rounded-xl shadow-md p-6 border border-amber-100 hover:shadow-lg hover:border-amber-300 transition-all duration-300 transform hover:scale-105">
+    <div class="flex justify-between items-start mb-4">
+      <div>
+        <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Expiring Soon</p>
+        <div class="text-3xl font-bold text-gray-900 mt-2">{{ getExpiringClients() }}</div>
+      </div>
+      <div class="p-3 bg-amber-100 rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3.05h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+    </div>
+    <p class="text-xs text-gray-500 font-medium">Renewal needed</p>
+  </div>
+
+  <!-- Plan Distribution Card -->
+  <div class="bg-gradient-to-br from-white to-purple-50 rounded-xl shadow-md p-6 border border-purple-100 hover:shadow-lg hover:border-purple-300 transition-all duration-300">
+    <div class="flex justify-between items-start mb-4">
+      <div>
+        <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Plan Mix</p>
+      </div>
+      <div class="p-3 bg-purple-100 rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 17"></polyline>
+          <polyline points="17 6 23 6 23 12"></polyline>
+        </svg>
+      </div>
+    </div>
+    <div class="space-y-2">
+      <div *ngFor="let item of getPlanBreakdown() | keyvalue" class="flex justify-between items-center text-sm">
+        <span class="text-gray-600 font-medium">{{ item.key }}</span>
+        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-bold text-xs">{{ item.value }}</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+/* Key Generator Component Styles */
+:host { display: block; }
+
+:host ::ng-deep {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  textarea,
+  select {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.15);
+  }
+
+  input[type="checkbox"] {
+    accent-color: #4f46e5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  input[type="checkbox"]:hover { transform: scale(1.1); }
+
+  button { transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+  button:hover { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); }
+  button:active { transform: scale(0.98); }
+
+  .border-green-200 { animation: slideInDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+  code { font-family: 'Monaco', 'Menlo', 'Courier New', monospace; }
+  svg { transition: all 0.2s ease; }
+  button:hover svg { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); }
+
+  label { color: #374151; font-weight: 600; }
+  .animate-slideInDown { animation: slideInDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .hover\:scale-102:hover { transform: scale(1.02); }
+}
+
+@keyframes slideInDown {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

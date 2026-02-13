@@ -1,0 +1,16 @@
+{
+  "extends": "@angular/eslint/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/compile-source",
+    "declaration": false,
+    "declarationMap": false,
+    "inlineSourceMap": true,
+    "types": [],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  },
+  "include": ["**/*.ts"]
+}

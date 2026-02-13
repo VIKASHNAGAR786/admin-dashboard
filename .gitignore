@@ -1,0 +1,46 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build directories
+/dist
+/build
+/out
+.next
+
+# Angular
+.angular/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Angular build output
+/admin-dashborad-ui/dist
+
+# NestJS build output
+/admin-dashboard-api/dist
+
+# Logs
+logs/
+*.log
+
+# Coverage
+coverage/
+
+# Cache
+.eslintcache
+.stylelintcache
