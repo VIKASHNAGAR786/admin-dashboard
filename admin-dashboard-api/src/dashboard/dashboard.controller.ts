@@ -12,6 +12,11 @@ export class DashboardController {
     return this.dashboardService.getStats();
   }
 
+  @Get('get-active-clients')
+  getActiveClients() {
+    return this.dashboardService.getActiveClients();
+  }
+
   @Get('summary')
   getSummary(@Request() req) {
     return this.dashboardService.getSummary(req.user.id);

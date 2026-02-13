@@ -77,7 +77,7 @@ export class ClientsTableComponent {
   }
 
   getActiveAccessKey(clientId: string): string | null {
-    const key = this.generatedKeys.find((k) => k.clientId === clientId && k.active === 'active');
+    const key = this.generatedKeys.find((k) => k.clientId === clientId && k.status === 'active');
     return key?.accessKey || key?.key || null;
   }
 

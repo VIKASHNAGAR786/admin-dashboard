@@ -64,4 +64,39 @@ export class DashboardService {
       timestamp: new Date(),
     };
   }
+
+  async getActiveClients() {
+    // Get all clients with their active access keys
+    const clients = await this.clientsRepository.find();
+    
+    const clientDetails = await Promise.all(
+      clients.map(async (client) => {
+        // Find all active access keys for this client
+        const activeKeys = await this.accessKeysService.findByClientId(
+          client.id,
+          'active'
+        );
+
+        // Calculate days remaining for each key and prepare response
+        return activeKeys.map((key) => {
+          const today = new Date();
+          const expiryDate = new Date(key.expirationDate);
+          const timeDiff = expiryDate.getTime() - today.getTime();
+          const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+          return {
+            clientId: client.id,
+            clientName: client.companyName,
+            plan: key.modules?.join(', ') || 'N/A',
+            expirationDate: key.expirationDate,
+            daysRemaining: daysRemaining > 0 ? daysRemaining : 0,
+            status: key.status,
+          };
+        });
+      })
+    );
+
+    // Flatten the array and filter only active status keys
+    return clientDetails.flat().filter((detail) => detail.status === 'active');
+  }
 }

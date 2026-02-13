@@ -158,6 +158,18 @@ export class AccessKeysService {
     });
   }
 
+  async findByClientId(clientId: string, status?: string) {
+    const whereClause: any = { clientId };
+    if (status) {
+      whereClause.status = status;
+    }
+    
+    return this.accessKeysRepository.find({
+      where: whereClause,
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async countByClientId(clientId: string): Promise<number> {
     return this.accessKeysRepository.count({ where: { clientId } });
   }

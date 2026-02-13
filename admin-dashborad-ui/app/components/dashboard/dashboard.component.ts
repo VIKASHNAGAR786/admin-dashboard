@@ -25,8 +25,11 @@ import { AlertService } from '../../../services/alert.service';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   clients: Client[] = [];
-  generatedKeys: GeneratedKey[] = [];
+   generatedKeys: GeneratedKey[] = [];
+  stats: any = {};
   sidebarOpen = false;
+
+  activeClients: any[] = [];
 
   private destroy$ = new Subject<void>();
 
@@ -41,6 +44,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Load data when component initializes (after user is logged in)
     this.dataService.loadClients();
     this.dataService.loadGeneratedKeys();
+    
+    // Fetch dashboard statistics
+    this.dataService.getClientStats()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (stats) => {
+          this.stats = stats;
+          console.log('Dashboard stats loaded:', stats);
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error loading stats:', error);
+          this.alertService.error('Failed to load dashboard statistics');
+          this.cdr.markForCheck();
+        }
+      });
+
+      // active clients
+    this.dataService.getActiveClients()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((activeClients) => {
+        this.generatedKeys = activeClients;
+        this.cdr.markForCheck();
+      });
 
     // Subscribe to clients
     this.dataService.clients$
@@ -51,12 +78,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     // Subscribe to generated keys
-    this.dataService.generatedKeys$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((keys) => {
-        this.generatedKeys = keys;
-        this.cdr.markForCheck();
-      });
+    // this.dataService.generatedKeys$
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((keys) => {
+    //     this.generatedKeys = keys;
+    //     this.cdr.markForCheck();
+    //   });
   }
 
   ngOnDestroy(): void {

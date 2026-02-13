@@ -94,6 +94,18 @@ export class DataService {
   }
 
   /**
+   * Get detailed client information with access keys
+   */
+  getClientDetails(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/dashboard/client-details`).pipe(
+      catchError((error) => {
+        console.error('Error fetching client details:', error);
+        return of([]);
+      })
+    );
+  }
+
+  /**
    * Create a new client
    */
   createClient(clientData: any): Observable<Client> {
@@ -224,7 +236,7 @@ export class DataService {
   revokeKey(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/access-keys/${id}`).pipe(
       tap(() => {
-        const currentKeys = this.generatedKeysSubject.value.filter(k => k.id !== id);
+        const currentKeys = this.generatedKeysSubject.value.filter(k => k.clientId !== id);
         this.generatedKeysSubject.next(currentKeys);
       }),
       catchError((error) => {
@@ -248,5 +260,17 @@ export class DataService {
   reloadAllData(): void {
     this.loadClients();
     this.loadGeneratedKeys();
+  }
+
+  /**
+   * Get active clients with their access keys
+   */
+  getActiveClients(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/dashboard/get-active-clients`).pipe(
+      catchError((error) => {
+        console.error('Error fetching active clients:', error);
+        return of([]);
+      })
+    );
   }
 }

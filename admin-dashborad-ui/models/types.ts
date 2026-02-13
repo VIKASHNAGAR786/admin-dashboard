@@ -12,19 +12,19 @@ export interface Client {
 }
 
 export interface GeneratedKey {
-  id: string;
-  key: string;
-  accessKey?: string;
   clientId: string;
-  companyName: string;
-  plan: string;
-  status?: string;
-  active: string;
-  expirationDate: string;
-  generatedAt: string;
-  modules: string[];
-  email: string;
-  contactNumber: string;
-  contactPerson: string;
-  address?: string;
+clientName: string;
+ plan: string;
+ expirationDate: string;
+ daysRemaining: number;
+ status: string;
+ key ?: string;
+ modules?: string[];
+ email?: string;
+ contactNumber?: string;
+ contactPerson?: string;
+ address?: string;
+ createdAt?: string;
+ updatedAt?: string;
+ accessKey?: string; // For backward compatibility with API response
 }

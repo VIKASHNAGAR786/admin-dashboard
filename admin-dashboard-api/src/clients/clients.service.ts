@@ -1,14 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Client } from './entities/client.entity';
 import { CreateClientDto, UpdateClientDto } from './dto/client.dto';
+import { AccessKeysService } from '@/access-keys/access-keys.service';
+import { AccessKey } from '@/access-keys/entities/access-key.entity';
+
 
 @Injectable()
 export class ClientsService {
   constructor(
     @InjectRepository(Client)
     private clientsRepository: Repository<Client>,
+
+    @InjectRepository(AccessKey)
+    private accessKeysRepository: Repository<AccessKey>,
+
   ) {}
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
@@ -54,10 +61,17 @@ export class ClientsService {
 
   async getStats() {
     const total = await this.clientsRepository.count();
-    const active = await this.clientsRepository.count({ where: { status: 'active' } });
+    const active = await this.accessKeysRepository.count({ where: { status: 'active' } });
     // Note: expiring count now refers to access keys, not clients
     // since clients no longer have expiration dates
-    const expiring = 0;
+    const today = new Date();
+    const sevenDaysLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const expiring = await this.accessKeysRepository.count({
+      where: {
+        status: 'active',
+        expirationDate: Between(today, sevenDaysLater),
+      },
+    });
 
     return { total, active, expiring };
   }
