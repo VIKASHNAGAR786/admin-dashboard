@@ -58,7 +58,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   handleGenerateKey(keyData: Omit<GeneratedKey, 'id' | 'generatedAt'>): void {
-    this.dataService.addGeneratedKey(keyData);
+    this.dataService.addGeneratedKey(keyData).subscribe({
+      next: (generatedKey) => {
+        console.log('Key generated successfully:', generatedKey);
+      },
+      error: (error) => {
+        console.error('Error generating key:', error);
+        alert('Failed to generate key. Please try again.');
+      }
+    });
   }
 
   handleLogout(): void {

@@ -1,104 +1,231 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, catchError, switchMap } from 'rxjs/operators';
 import { Client, GeneratedKey } from '../models/types';
+import { environment } from '../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private clientsSubject = new BehaviorSubject<Client[]>([
-    {
-      id: '1',
-      companyName: 'TechCorp Solutions',
-      plan: 'Enterprise',
-      startDate: '2025-06-15',
-      expirationDate: '2026-06-15',
-      accessKey: 'ENT-TECH-2025-A3F9K2',
-      status: 'Active',
-      modules: ['Pharmacy', 'Sales', 'Electronics', 'Inventory'],
-      email: 'contact@techcorp.com',
-      contactNumber: '+1 (555) 123-4567',
-      contactPerson: 'John Smith',
-      address: '123 Tech Street, Silicon Valley, CA 94025',
-    },
-    {
-      id: '2',
-      companyName: 'Digital Ventures',
-      plan: 'Pro',
-      startDate: '2025-08-20',
-      expirationDate: '2026-02-20',
-      accessKey: 'PRO-DIGI-2025-B7H4M1',
-      status: 'Expiring Soon',
-      modules: ['Sales', 'Electronics'],
-      email: 'info@digitalventures.com',
-      contactNumber: '+1 (555) 234-5678',
-      contactPerson: 'Sarah Johnson',
-      address: '456 Digital Ave, New York, NY 10001',
-    },
-    {
-      id: '3',
-      companyName: 'StartUp Inc',
-      plan: 'Basic',
-      startDate: '2025-09-10',
-      expirationDate: '2025-12-10',
-      accessKey: 'BAS-STAR-2025-C2J6N8',
-      status: 'Expired',
-      modules: ['Sales'],
-      email: 'hello@startup.com',
-      contactNumber: '+1 (555) 345-6789',
-      contactPerson: 'Mike Chen',
-      address: '789 Startup Blvd, Austin, TX 78701',
-    },
-    {
-      id: '4',
-      companyName: 'Global Systems',
-      plan: 'Enterprise',
-      startDate: '2025-07-01',
-      expirationDate: '2026-07-01',
-      accessKey: 'ENT-GLOB-2025-D5K9P4',
-      status: 'Active',
-      modules: ['Pharmacy', 'Sales', 'Electronics', 'Inventory', 'HR Management'],
-      email: 'contact@globalsystems.com',
-      contactNumber: '+1 (555) 456-7890',
-      contactPerson: 'Emily Davis',
-      address: '321 Global Plaza, Chicago, IL 60601',
-    },
-    {
-      id: '5',
-      companyName: 'Innovation Labs',
-      plan: 'Pro',
-      startDate: '2025-10-15',
-      expirationDate: '2026-04-15',
-      accessKey: 'PRO-INNO-2025-E8L3Q7',
-      status: 'Active',
-      modules: ['Sales', 'Inventory', 'CRM'],
-      email: 'team@innovationlabs.com',
-      contactNumber: '+1 (555) 567-8901',
-      contactPerson: 'David Lee',
-      address: '555 Innovation Drive, Seattle, WA 98101',
-    },
-  ]);
-
-  private generatedKeysSubject = new BehaviorSubject<GeneratedKey[]>([
-    {
-      id: '1',
-      key: 'ENT-TECH-2025-A3F9K2',
-      companyName: 'TechCorp Solutions',
-      plan: 'Enterprise',
-      expirationDate: '2026-06-15',
-      generatedAt: '2025-06-15T10:30:00',
-      modules: ['Pharmacy', 'Sales', 'Electronics', 'Inventory'],
-      email: 'contact@techcorp.com',
-      contactNumber: '+1 (555) 123-4567',
-      contactPerson: 'John Smith',
-      address: '123 Tech Street, Silicon Valley, CA 94025',
-    },
-  ]);
+  private clientsSubject = new BehaviorSubject<Client[]>([]);
+  private generatedKeysSubject = new BehaviorSubject<GeneratedKey[]>([]);
+  private apiUrl = environment.apiUrl;
 
   public clients$: Observable<Client[]> = this.clientsSubject.asObservable();
   public generatedKeys$: Observable<GeneratedKey[]> = this.generatedKeysSubject.asObservable();
 
-  constructor() {}
+  constructor(private http: HttpClient) {
+    this.loadClients();
+    this.loadGeneratedKeys();
+  }
+
+  /**
+   * Load all clients from the backend
+   */
+  loadClients(): void {
+    this.getAllClients().subscribe(
+      (response: any) => {
+        const clients = response.data || response || [];
+        this.clientsSubject.next(clients);
+      },
+      (error) => {
+        console.error('Error loading clients:', error);
+        // Fallback to empty array on error
+        this.clientsSubject.next([]);
+      }
+    );
+  }
+
+  /**
+   * Load all generated keys from the backend
+   */
+  loadGeneratedKeys(): void {
+    this.getAllGeneratedKeys().subscribe(
+      (response: any) => {
+        const keys = response.data || response || [];
+        this.generatedKeysSubject.next(keys);
+      },
+      (error) => {
+        console.error('Error loading generated keys:', error);
+        // Fallback to empty array on error
+        this.generatedKeysSubject.next([]);
+      }
+    );
+  }
+
+  /**
+   * Get all clients with pagination
+   */
+  getAllClients(page: number = 1, limit: number = 100): Observable<any> {
+    return this.http.get(`${this.apiUrl}/clients`, {
+      params: { page: page.toString(), limit: limit.toString() }
+    }).pipe(
+      catchError((error) => {
+        console.error('Error fetching clients:', error);
+        return of({ data: [], total: 0 });
+      })
+    );
+  }
+
+  /**
+   * Get client by ID
+   */
+  getClient(id: string): Observable<Client> {
+    return this.http.get<Client>(`${this.apiUrl}/clients/${id}`).pipe(
+      catchError((error) => {
+        console.error('Error fetching client:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Get client statistics
+   */
+  getClientStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/clients/stats`).pipe(
+      catchError((error) => {
+        console.error('Error fetching client stats:', error);
+        return of({});
+      })
+    );
+  }
+
+  /**
+   * Create a new client
+   */
+  createClient(clientData: any): Observable<Client> {
+    return this.http.post<Client>(`${this.apiUrl}/clients`, clientData).pipe(
+      tap((newClient) => {
+        const currentClients = this.clientsSubject.value;
+        this.clientsSubject.next([newClient, ...currentClients]);
+      }),
+      catchError((error) => {
+        console.error('Error creating client:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Update an existing client
+   */
+  updateClient(id: string, clientData: any): Observable<Client> {
+    return this.http.put<Client>(`${this.apiUrl}/clients/${id}`, clientData).pipe(
+      tap((updatedClient) => {
+        const currentClients = this.clientsSubject.value;
+        const index = currentClients.findIndex(c => c.id === id);
+        if (index !== -1) {
+          currentClients[index] = updatedClient;
+          this.clientsSubject.next([...currentClients]);
+        }
+      }),
+      catchError((error) => {
+        console.error('Error updating client:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Delete a client
+   */
+  deleteClient(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/clients/${id}`).pipe(
+      tap(() => {
+        const currentClients = this.clientsSubject.value.filter(c => c.id !== id);
+        this.clientsSubject.next(currentClients);
+      }),
+      catchError((error) => {
+        console.error('Error deleting client:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Get all generated keys with pagination
+   */
+  getAllGeneratedKeys(page: number = 1, limit: number = 100): Observable<any> {
+    return this.http.get(`${this.apiUrl}/access-keys`, {
+      params: { page: page.toString(), limit: limit.toString() }
+    }).pipe(
+      catchError((error) => {
+        console.error('Error fetching generated keys:', error);
+        return of({ data: [], total: 0 });
+      })
+    );
+  }
+
+  /**
+   * Get generated key by ID
+   */
+  getGeneratedKey(id: string): Observable<GeneratedKey> {
+    return this.http.get<GeneratedKey>(`${this.apiUrl}/access-keys/${id}`).pipe(
+      catchError((error) => {
+        console.error('Error fetching generated key:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Get keys by client ID
+   */
+  getKeysByClient(clientId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/access-keys/client/${clientId}`).pipe(
+      catchError((error) => {
+        console.error('Error fetching keys by client:', error);
+        return of([]);
+      })
+    );
+  }
+
+  /**
+   * Validate an access key
+   */
+  validateKey(key: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/access-keys/validate/${key}`).pipe(
+      catchError((error) => {
+        console.error('Error validating key:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Generate a new access key
+   */
+  addGeneratedKey(keyData: Omit<GeneratedKey, 'id' | 'generatedAt'>): Observable<GeneratedKey> {
+    return this.http.post<GeneratedKey>(`${this.apiUrl}/access-keys`, keyData).pipe(
+      tap((newKey) => {
+        const currentKeys = this.generatedKeysSubject.value;
+        this.generatedKeysSubject.next([newKey, ...currentKeys]);
+      }),
+      catchError((error) => {
+        console.error('Error generating key:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Revoke/delete a generated key
+   */
+  revokeKey(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/access-keys/${id}`).pipe(
+      tap(() => {
+        const currentKeys = this.generatedKeysSubject.value.filter(k => k.id !== id);
+        this.generatedKeysSubject.next(currentKeys);
+      }),
+      catchError((error) => {
+        console.error('Error revoking key:', error);
+        throw error;
+      })
+    );
+  }
 
   getClients(): Client[] {
     return this.clientsSubject.value;
@@ -106,15 +233,5 @@ export class DataService {
 
   getGeneratedKeys(): GeneratedKey[] {
     return this.generatedKeysSubject.value;
-  }
-
-  addGeneratedKey(keyData: Omit<GeneratedKey, 'id' | 'generatedAt'>): void {
-    const newKey: GeneratedKey = {
-      ...keyData,
-      id: Date.now().toString(),
-      generatedAt: new Date().toISOString(),
-    };
-    const currentKeys = this.generatedKeysSubject.value;
-    this.generatedKeysSubject.next([newKey, ...currentKeys]);
   }
 }

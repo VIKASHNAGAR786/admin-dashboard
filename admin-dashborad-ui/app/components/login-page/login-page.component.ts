@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
-// import { AuthService } from '../../services/auth.service';
+import { AuthService, LoginDto } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -24,20 +23,27 @@ export class LoginPageComponent {
     private router: Router
   ) {}
 
-  async handleLogin(e: Event): Promise<void> {
+  handleLogin(e: Event): void {
     e.preventDefault();
     this.error = '';
     this.isLoading = true;
 
-    const success = await this.authService.login(this.username, this.password);
+    const loginDto: LoginDto = {
+      username: this.username,
+      password: this.password
+    };
 
-    if (success) {
-      this.router.navigate(['/dashboard']);
-    } else {
-      this.error = 'Invalid username or password';
-    }
-
-    this.isLoading = false;
+    this.authService.login(loginDto).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.router.navigate(['/dashboard']);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.error = error || 'Invalid username or password';
+        console.error('Login error:', error);
+      }
+    });
   }
 
   togglePasswordVisibility(): void {
