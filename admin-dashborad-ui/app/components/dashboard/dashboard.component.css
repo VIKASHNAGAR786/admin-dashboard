@@ -1,3 +1,28 @@
+/* Main Layout with Sidebar */
+.main-layout {
+  margin-left: 280px;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 100vh;
+}
+
+/* When sidebar is closed on desktop */
+@media (max-width: 768px) {
+  .main-layout {
+    margin-left: 0;
+  }
+
+  .main-layout.sidebar-open {
+    margin-left: 0;
+  }
+}
+
+/* On desktop, sidebar is always visible */
+@media (min-width: 769px) {
+  .main-layout {
+    margin-left: 280px;
+  }
+}
+
 /* Dashboard Component Styles */
 
 :host ::ng-deep {

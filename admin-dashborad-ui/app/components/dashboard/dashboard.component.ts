@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { DashboardStatsComponent } from '../dashboard-stats/dashboard-stats.component';
 import { ClientsTableComponent } from '../clients-table/clients-table.component';
 import { KeyGeneratorComponent } from '../key-generator/key-generator.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Client, GeneratedKey } from '../../../models/types';
 import { DataService } from '../../../services/data.service';
 
@@ -16,7 +17,8 @@ import { DataService } from '../../../services/data.service';
     CommonModule,
     DashboardStatsComponent,
     ClientsTableComponent,
-    KeyGeneratorComponent
+    KeyGeneratorComponent,
+    SidebarComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -25,6 +27,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   clients: Client[] = [];
   generatedKeys: GeneratedKey[] = [];
   activeTab: 'clients' | 'keys' = 'clients';
+  sidebarOpen = true;
 
   private destroy$ = new Subject<void>();
 
@@ -61,5 +64,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   handleLogout(): void {
     localStorage.removeItem('isAdminAuthenticated');
     this.router.navigate(['/logout']);
+  }
+
+  handleToggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 }
