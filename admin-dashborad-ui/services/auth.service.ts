@@ -5,7 +5,7 @@ import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../environment';
 
 export interface LoginDto {
-  username: string;
+  email: string;
   password: string;
 }
 

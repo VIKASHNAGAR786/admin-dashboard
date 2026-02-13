@@ -12,7 +12,10 @@ import { jwtConfig } from '../config/database.config';
   imports: [
     TypeOrmModule.forFeature([User]),
     PassportModule,
-    JwtModule.register(jwtConfig.signOptions),
+    JwtModule.register({
+      secret: jwtConfig.secret,
+      signOptions: jwtConfig.signOptions,
+    }),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],

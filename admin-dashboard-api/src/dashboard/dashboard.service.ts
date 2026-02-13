@@ -17,19 +17,9 @@ export class DashboardService {
   async getStats() {
     const stats = await this.clientsService.getStats();
     
-    // Get plan breakdown
-    const planBreakdown = await this.clientsRepository
-      .createQueryBuilder('client')
-      .select('client.plan', 'plan')
-      .addSelect('COUNT(client.id)', 'count')
-      .groupBy('client.plan')
-      .getRawMany();
-
-    // Transform plan breakdown to object
+    // Note: Plan distribution is now tracked in access keys, not clients
+    // Clients are just contact records without plan information
     const planDistribution = {};
-    planBreakdown.forEach((item) => {
-      planDistribution[item.plan] = parseInt(item.count);
-    });
 
     // Get total keys generated
     const totalKeys = await this.accessKeysService.findAll(1, 1);

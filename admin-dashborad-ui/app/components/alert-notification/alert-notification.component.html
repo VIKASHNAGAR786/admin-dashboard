@@ -1,0 +1,21 @@
+<div class="alert-wrapper">
+  <div 
+    *ngFor="let alert of alerts"
+    [ngClass]="getAlertClass(alert.type)"
+    class="alert-container animate-slideInRight"
+  >
+    <div class="flex items-start gap-3">
+      <span class="alert-icon">{{ getAlertIcon(alert.type) }}</span>
+      <div class="flex-1">
+        <p class="alert-message">{{ alert.message }}</p>
+      </div>
+      <button 
+        (click)="removeAlert(alert.id)"
+        class="alert-close"
+        aria-label="Close alert"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+</div>

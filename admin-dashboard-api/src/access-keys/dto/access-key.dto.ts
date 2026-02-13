@@ -1,4 +1,4 @@
-import { IsString, IsArray, IsOptional, IsUUID } from 'class-validator';
+import { IsString, IsArray, IsOptional, IsUUID, IsDateString } from 'class-validator';
 
 export class GenerateAccessKeyDto {
   @IsUUID()
@@ -8,8 +8,9 @@ export class GenerateAccessKeyDto {
   @IsOptional()
   modules?: string[];
 
+  @IsDateString()
   @IsOptional()
-  expirationDate?: Date;
+  expirationDate?: string | Date;
 }
 
 export class ValidateAccessKeyDto {

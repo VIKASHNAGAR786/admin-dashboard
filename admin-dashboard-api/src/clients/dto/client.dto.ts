@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsOptional, IsDate, IsArray } from 'class-validator';
+import { IsString, IsEmail, IsOptional } from 'class-validator';
 
 export class CreateClientDto {
   @IsString()
@@ -22,17 +22,7 @@ export class CreateClientDto {
 
   @IsString()
   @IsOptional()
-  plan?: string;
-
-  @IsOptional()
-  startDate?: Date;
-
-  @IsOptional()
-  expirationDate?: Date;
-
-  @IsArray()
-  @IsOptional()
-  modules?: string[];
+  status?: string;
 }
 
 export class UpdateClientDto {
@@ -58,18 +48,7 @@ export class UpdateClientDto {
 
   @IsString()
   @IsOptional()
-  plan?: string;
-
-  @IsOptional()
-  expirationDate?: Date;
-
-  @IsString()
-  @IsOptional()
   status?: string;
-
-  @IsArray()
-  @IsOptional()
-  modules?: string[];
 }
 
 export class ClientResponseDto {
@@ -79,11 +58,7 @@ export class ClientResponseDto {
   contactPerson: string;
   contactNumber: string;
   address: string;
-  plan: string;
-  startDate: Date;
-  expirationDate: Date;
   status: string;
-  modules: string[];
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,7 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Client } from '../../../models/types';
-import { formatDate, parseISO } from 'date-fns';
 
 @Component({
   selector: 'app-client-details-dialog',
@@ -10,34 +9,27 @@ import { formatDate, parseISO } from 'date-fns';
   templateUrl: './client-details-dialog.component.html',
   styleUrls: ['./client-details-dialog.component.css']
 })
-export class ClientDetailsDialogComponent {
+export class ClientDetailsDialogComponent implements OnChanges {
   @Input() client: Client | null = null;
   @Input() isOpen: boolean = false;
   @Output() closeEvent = new EventEmitter<void>();
 
-  formatDate(dateString: string): string {
-    try {
-      const date = parseISO(dateString);
-      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    } catch {
-      return dateString;
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isOpen']) {
+      console.log('Client details dialog isOpen changed to:', this.isOpen);
+      this.cdr.markForCheck();
+    }
+    if (changes['client']) {
+      console.log('Client details dialog client changed to:', this.client);
+      this.cdr.markForCheck();
     }
   }
 
   closeDialog(): void {
+    console.log('Closing client details dialog');
     this.closeEvent.emit();
-  }
-
-  getPlanBadgeClass(): string {
-    const baseClass = 'px-2 py-1 rounded text-xs font-medium';
-    const planClass: { [key: string]: string } = {
-      'Basic': 'bg-blue-100 text-blue-800',
-      'Pro': 'bg-purple-100 text-purple-800',
-      'Enterprise': 'bg-orange-100 text-orange-800',
-    };
-    const plan = this.client?.plan || '';
-    const planSpecificClass = planClass[plan] || 'bg-gray-100 text-gray-800';
-    return `${baseClass} ${planSpecificClass}`;
   }
 
   getStatusBadgeClass(): string {

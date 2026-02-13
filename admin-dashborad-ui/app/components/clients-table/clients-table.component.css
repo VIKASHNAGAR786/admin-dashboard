@@ -2,6 +2,7 @@
 
 :host {
   display: block;
+  pointer-events: auto;
 }
 
 :host ::ng-deep {

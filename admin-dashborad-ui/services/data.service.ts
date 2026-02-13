@@ -17,8 +17,8 @@ export class DataService {
   public generatedKeys$: Observable<GeneratedKey[]> = this.generatedKeysSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    this.loadClients();
-    this.loadGeneratedKeys();
+    // Don't auto-load data here - wait until user is authenticated
+    // Data will be loaded when route is accessed
   }
 
   /**
@@ -198,11 +198,18 @@ export class DataService {
   /**
    * Generate a new access key
    */
-  addGeneratedKey(keyData: Omit<GeneratedKey, 'id' | 'generatedAt'>): Observable<GeneratedKey> {
-    return this.http.post<GeneratedKey>(`${this.apiUrl}/access-keys`, keyData).pipe(
+  addGeneratedKey(request: { clientId: string; modules?: string[]; expirationDate?: string }): Observable<any> {
+    // Log the attempt
+    console.log('API Request - Generating key:', request);
+    const token = localStorage.getItem('authToken');
+    console.log('Token exists:', !!token);
+    if (token) {
+      console.log('Token (first 20 chars):', token.substring(0, 20) + '...');
+    }
+    
+    return this.http.post<any>(`${this.apiUrl}/access-keys`, request).pipe(
       tap((newKey) => {
-        const currentKeys = this.generatedKeysSubject.value;
-        this.generatedKeysSubject.next([newKey, ...currentKeys]);
+        console.log('Key generated successfully:', newKey);
       }),
       catchError((error) => {
         console.error('Error generating key:', error);
@@ -233,5 +240,13 @@ export class DataService {
 
   getGeneratedKeys(): GeneratedKey[] {
     return this.generatedKeysSubject.value;
+  }
+
+  /**
+   * Reload all data (clients and generated keys)
+   */
+  reloadAllData(): void {
+    this.loadClients();
+    this.loadGeneratedKeys();
   }
 }

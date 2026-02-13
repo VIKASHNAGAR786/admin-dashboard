@@ -29,7 +29,7 @@ export class LoginPageComponent {
     this.isLoading = true;
 
     const loginDto: LoginDto = {
-      username: this.username,
+      email: this.username,
       password: this.password
     };
 

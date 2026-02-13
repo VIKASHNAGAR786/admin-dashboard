@@ -3,27 +3,27 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { DashboardStatsComponent } from '../dashboard-stats/dashboard-stats.component';
-import { KeyGeneratorComponent } from '../key-generator/key-generator.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { ClientsTableComponent } from '../clients-table/clients-table.component';
+import { AlertNotificationComponent } from '../alert-notification/alert-notification.component';
 import { Client, GeneratedKey } from '../../../models/types';
 import { DataService } from '../../../services/data.service';
 import { AlertService } from '../../../services/alert.service';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-clients-page',
   standalone: true,
   imports: [
     CommonModule,
-    DashboardStatsComponent,
-    KeyGeneratorComponent,
-    SidebarComponent
+    SidebarComponent,
+    ClientsTableComponent,
+    AlertNotificationComponent
   ],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+  templateUrl: './clients-page.component.html',
+  styleUrls: ['./clients-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class ClientsPageComponent implements OnInit, OnDestroy {
   clients: Client[] = [];
   generatedKeys: GeneratedKey[] = [];
   sidebarOpen = false;
@@ -38,11 +38,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Load data when component initializes (after user is logged in)
     this.dataService.loadClients();
     this.dataService.loadGeneratedKeys();
 
-    // Subscribe to clients
     this.dataService.clients$
       .pipe(takeUntil(this.destroy$))
       .subscribe((clients) => {
@@ -50,7 +48,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       });
 
-    // Subscribe to generated keys
     this.dataService.generatedKeys$
       .pipe(takeUntil(this.destroy$))
       .subscribe((keys) => {
@@ -64,47 +61,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  handleGenerateKey(keyData: any): void {
-    // Extract clientId from the emitted data
-    const { clientId, ...displayData } = keyData;
-    const expirationDate = keyData.expirationDate; // Already in YYYY-MM-DD format
-    
-    // Prepare request for backend
-    const backendRequest = {
-      clientId,
-      modules: keyData.modules,
-      expirationDate: expirationDate
-    };
-
-    console.log('Generating key with clientId:', clientId);
-    console.log('Backend request:', backendRequest);
-
-    this.dataService.addGeneratedKey(backendRequest).subscribe({
-      next: (response: any) => {
-        if (response.alreadyExists) {
-          // Key already exists
-          const expiryDate = new Date(response.existingKey.expirationDate).toLocaleDateString();
-          this.alertService.warning(
-            `Client already has an active key that expires on ${expiryDate}. No new key was generated.`,
-            7000
-          );
-          console.log('Existing key found for client:', response.existingKey);
-        } else {
-          // New key generated successfully
-          this.alertService.success('Access key generated successfully!');
-          console.log('Key generated successfully:', response);
-        }
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        console.error('Error generating key:', error);
-        const errorMessage = error.error?.message || error.message || 'Failed to generate key';
-        this.alertService.error(`Error: ${errorMessage}`);
-        this.cdr.markForCheck();
-      }
-    });
-  }
-
   handleCreateClient(clientData: any): void {
     console.log('Creating client:', clientData);
     
@@ -112,7 +68,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       next: (newClient) => {
         console.log('Client created successfully:', newClient);
         this.alertService.success('Client created successfully!');
-        // Reload clients to get the updated list
         this.dataService.loadClients();
         this.cdr.markForCheck();
       },

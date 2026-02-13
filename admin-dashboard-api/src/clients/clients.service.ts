@@ -55,10 +55,9 @@ export class ClientsService {
   async getStats() {
     const total = await this.clientsRepository.count();
     const active = await this.clientsRepository.count({ where: { status: 'active' } });
-    const expiring = await this.clientsRepository.createQueryBuilder('client')
-      .where('client.expirationDate <= DATE_ADD(NOW(), INTERVAL 30 DAY)')
-      .andWhere('client.expirationDate > NOW()')
-      .getCount();
+    // Note: expiring count now refers to access keys, not clients
+    // since clients no longer have expiration dates
+    const expiring = 0;
 
     return { total, active, expiring };
   }

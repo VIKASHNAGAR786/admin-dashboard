@@ -13,19 +13,77 @@ export class AccessKeysService {
     private accessKeysRepository: Repository<AccessKey>,
   ) {}
 
+  async checkExistingValidKey(clientId: string): Promise<AccessKey | null> {
+    try {
+      const existingKey = await this.accessKeysRepository.findOne({
+        where: {
+          clientId,
+          status: 'active',
+        },
+        order: { createdAt: 'DESC' },
+      });
+
+      if (!existingKey) {
+        return null;
+      }
+
+      // Check if key is expired
+      if (existingKey.expirationDate && new Date(existingKey.expirationDate) < new Date()) {
+        // Mark as expired
+        await this.accessKeysRepository.update(existingKey.id, { status: 'expired' });
+        return null;
+      }
+
+      return existingKey;
+    } catch (error) {
+      console.error('Error checking existing key:', error);
+      return null;
+    }
+  }
+
   async generate(generateDto: GenerateAccessKeyDto): Promise<AccessKey> {
-    // Generate unique key format: PREFIX-RANDOM-UNIQUE
-    const key = `AK_${uuid().replace(/-/g, '').toUpperCase().slice(0, 20)}_${Date.now().toString(36).toUpperCase()}`;
+    try {
+      // Generate unique key format: PREFIX-RANDOM-UNIQUE
+      const key = `AK_${uuid().replace(/-/g, '').toUpperCase().slice(0, 20)}_${Date.now().toString(36).toUpperCase()}`;
 
-    const accessKey = this.accessKeysRepository.create({
-      key,
-      clientId: generateDto.clientId,
-      modules: generateDto.modules || [],
-      expirationDate: generateDto.expirationDate,
-      status: 'active',
-    });
+      // Ensure expiration date is a valid Date object
+      let expirationDate: Date | null = null;
+      if (generateDto.expirationDate) {
+        if (typeof generateDto.expirationDate === 'string') {
+          expirationDate = new Date(generateDto.expirationDate);
+        } else if (generateDto.expirationDate instanceof Date) {
+          expirationDate = generateDto.expirationDate;
+        }
+        
+        if (isNaN(expirationDate.getTime())) {
+          throw new Error('Invalid expiration date format');
+        }
+      }
 
-    return this.accessKeysRepository.save(accessKey);
+      console.log('Creating access key with:', {
+        key,
+        clientId: generateDto.clientId,
+        modules: generateDto.modules,
+        expirationDate,
+      });
+
+      const accessKey = this.accessKeysRepository.create({
+        key,
+        clientId: generateDto.clientId,
+        modules: generateDto.modules || [],
+        expirationDate,
+        status: 'active',
+      });
+
+      console.log('Access key entity created:', accessKey);
+      const savedKey = await this.accessKeysRepository.save(accessKey);
+      console.log('Access key saved to database:', savedKey);
+
+      return savedKey;
+    } catch (error) {
+      console.error('Error in generate service method:', error);
+      throw error;
+    }
   }
 
   async findAll(page: number = 1, limit: number = 10) {
@@ -47,14 +105,19 @@ export class AccessKeysService {
   }
 
   async findOne(id: string): Promise<AccessKey> {
-    const key = await this.accessKeysRepository.findOne({ 
-      where: { id },
-      relations: ['client'],
-    });
-    if (!key) {
-      throw new Error('Access key not found');
+    try {
+      const key = await this.accessKeysRepository.findOne({ 
+        where: { id },
+        relations: ['client'],
+      });
+      if (!key) {
+        throw new Error(`Access key with ID ${id} not found`);
+      }
+      return key;
+    } catch (error) {
+      console.error('Error finding access key:', error);
+      throw error;
     }
-    return key;
   }
 
   async validateKey(key: string) {

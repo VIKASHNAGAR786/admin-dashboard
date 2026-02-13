@@ -22,20 +22,8 @@ export class Client {
   @Column({ type: 'text', nullable: true })
   address: string;
 
-  @Column({ type: 'varchar', length: 50 })
-  plan: string = 'Basic';
-
-  @Column({ type: 'date', nullable: true })
-  startDate: Date;
-
-  @Column({ type: 'date', nullable: true })
-  expirationDate: Date;
-
   @Column({ type: 'varchar', length: 50, default: 'active' })
   status: string = 'active';
-
-  @Column({ type: 'simple-json', nullable: true })
-  modules: string[];
 
   @OneToMany(() => AccessKey, (key) => key.client)
   accessKeys: AccessKey[];

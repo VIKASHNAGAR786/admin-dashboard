@@ -51,6 +51,17 @@
   100% { opacity: 1; }
 }
 
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar { width: 8px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { 
+  background: linear-gradient(to bottom, #10b981, #059669); 
+  border-radius: 10px; 
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { 
+  background: linear-gradient(to bottom, #059669, #047857); 
+}
+
 @media (prefers-reduced-motion: reduce) {
   :host ::ng-deep * {
     animation-duration: 0.01ms !important;

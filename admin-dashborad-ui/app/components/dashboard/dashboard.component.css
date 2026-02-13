@@ -1,8 +1,14 @@
 /* Main Layout with Sidebar */
 .main-layout {
-  margin-left: 280px;
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 80px;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   min-height: 100vh;
+}
+
+/* When sidebar is open/expanded on desktop */
+.main-layout.sidebar-open {
+  margin-left: 280px;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* When sidebar is closed on desktop */
@@ -16,14 +22,87 @@
   }
 }
 
-/* On desktop, sidebar is always visible */
+/* On desktop, default to closed sidebar showing only icons */
 @media (min-width: 769px) {
   .main-layout {
+    margin-left: 80px;
+  }
+
+  .main-layout.sidebar-open {
     margin-left: 280px;
   }
 }
 
-/* Dashboard Component Styles */
+/* Premium Professional Animations */
+
+@keyframes blob {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.group:hover .group-hover\\:shake {
+  animation: shake 0.5s ease-in-out;
+}
 
 :host ::ng-deep {
   /* Header animations */
@@ -61,8 +140,8 @@
   }
 }
 
-/* Smooth transitions for all elements */
-* {
+/* Smooth transitions for specific properties only */
+p, span, div:not(.main-layout), button:not(.toggle-btn), a {
   transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
