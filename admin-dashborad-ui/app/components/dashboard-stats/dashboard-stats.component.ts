@@ -51,7 +51,7 @@ export class DashboardStatsComponent {
           plan: key.plan,
           expirationDate: key.expirationDate,
           daysRemaining: key.daysRemaining > 0 ? key.daysRemaining : 0,
-          status: key.status,
+          status: key.status || 'unknown',
         };
       })
       .sort((a, b) => a.daysRemaining - b.daysRemaining);

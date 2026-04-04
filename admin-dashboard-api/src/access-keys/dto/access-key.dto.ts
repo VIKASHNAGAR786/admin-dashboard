@@ -6,7 +6,7 @@ export class GenerateAccessKeyDto {
 
   @IsArray()
   @IsOptional()
-  modules?: string[];
+  modules?: any[];
 
   @IsDateString()
   @IsOptional()
@@ -22,7 +22,7 @@ export class AccessKeyResponseDto {
   id: string;
   key: string;
   clientId: string;
-  modules: string[];
+  modules: any[];
   expirationDate: Date;
   status: string;
   createdAt: Date;

@@ -5,16 +5,413 @@ import { GeneratedKey, Client } from '../../../models/types';
 import { format, parseISO } from 'date-fns';
 import { AlertService } from '../../../services/alert.service';
 
-const AVAILABLE_MODULES = [
-  'Pharmacy',
-  'Sales',
-  'Electronics',
-  'Inventory',
-  'HR Management',
-  'CRM',
-  'Accounting',
-  'Reports',
-  'Analytics',
+export interface ModuleNode {
+  id: number;
+  label: string;
+  type: string;
+  sortOrder: number;
+  children: ModuleNode[];
+  selected?: boolean;
+  expanded?: boolean;
+  indeterminate?: boolean;
+}
+
+const MODULE_HIERARCHY: ModuleNode[] = [
+  {
+    "id": 1,
+    "label": "Unified Sales",
+    "type": "module",
+    "sortOrder": 1,
+    "expanded": true,
+    "children": [
+      {
+        "id": 101,
+        "label": "Sales",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 10001, "label": "Make Sale", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 10002, "label": "Sale Report", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "label": "Garment Store",
+    "type": "module",
+    "sortOrder": 2,
+    "expanded": true,
+    "children": [
+      {
+        "id": 201,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 2001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 2002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 202,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 2003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "label": "Footwear Store",
+    "type": "module",
+    "sortOrder": 3,
+    "expanded": true,
+    "children": [
+      {
+        "id": 301,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 3001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 3002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 302,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 3003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "label": "Auto Parts",
+    "type": "module",
+    "sortOrder": 4,
+    "expanded": true,
+    "children": [
+      {
+        "id": 401,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 4001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 4002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 402,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 4003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "label": "Furniture Store",
+    "type": "module",
+    "sortOrder": 5,
+    "expanded": true,
+    "children": [
+      {
+        "id": 501,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 5001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 5002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 502,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 5003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "label": "Optical Store",
+    "type": "module",
+    "sortOrder": 6,
+    "expanded": true,
+    "children": [
+      {
+        "id": 601,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 6001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 6002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 602,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 6003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "label": "Pharmacy Store",
+    "type": "module",
+    "sortOrder": 7,
+    "expanded": true,
+    "children": [
+      {
+        "id": 701,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 7001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 7002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 702,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 7003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "label": "Sports Shop",
+    "type": "module",
+    "sortOrder": 8,
+    "expanded": true,
+    "children": [
+      {
+        "id": 801,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 8001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 8002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 802,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 8003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "label": "Supermarket",
+    "type": "module",
+    "sortOrder": 9,
+    "expanded": true,
+    "children": [
+      {
+        "id": 901,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 9001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 9002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 902,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 9003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "label": "Electronics",
+    "type": "module",
+    "sortOrder": 10,
+    "expanded": true,
+    "children": [
+      {
+        "id": 1001,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 10101, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 10102, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 1002,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 10103, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "label": "Mobile Phone Shop",
+    "type": "module",
+    "sortOrder": 11,
+    "expanded": true,
+    "children": [
+      {
+        "id": 1101,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 11001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 11002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 1102,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 11003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "label": "Apparel Outlet",
+    "type": "module",
+    "sortOrder": 12,
+    "expanded": true,
+    "children": [
+      {
+        "id": 1201,
+        "label": "Inventory",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 12001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 12002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 1202,
+        "label": "Settings",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 12003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "label": "Contacts",
+    "type": "module",
+    "sortOrder": 13,
+    "expanded": true,
+    "children": [
+      {
+        "id": 1301,
+        "label": "Customers",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 13001, "label": "View", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 13002, "label": "Manage", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      },
+      {
+        "id": 1302,
+        "label": "Suppliers",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 13003, "label": "View", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 13004, "label": "Manage", "type": "tab", "sortOrder": 2, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "label": "System & Accounts",
+    "type": "module",
+    "sortOrder": 14,
+    "expanded": true,
+    "children": [
+      {
+        "id": 1401,
+        "label": "Accounts",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 14001, "label": "Banking", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      },
+      {
+        "id": 1402,
+        "label": "User Management",
+        "type": "submodule",
+        "sortOrder": 2,
+        "children": [
+          { "id": 14002, "label": "Manage Access", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "label": "System Setting",
+    "type": "module",
+    "sortOrder": 15,
+    "children": [
+      { "id": 15001, "label": "Sales Settings", "type": "tab", "sortOrder": 1, "children": [] },
+      { "id": 15002, "label": "Formate Editor", "type": "tab", "sortOrder": 2, "children": [] },
+      { "id": 15003, "label": "Hsn Master", "type": "tab", "sortOrder": 3, "children": [] },
+      { "id": 15004, "label": "Version Control", "type": "tab", "sortOrder": 4, "children": [] }
+    ]
+  }
 ];
 
 @Component({
@@ -29,18 +426,67 @@ export class KeyGeneratorComponent {
   @Input() clients: Client[] = [];
   @Output() onGenerateKey = new EventEmitter<Omit<GeneratedKey, 'id' | 'generatedAt'>>();
 
-  AVAILABLE_MODULES = AVAILABLE_MODULES;
+  moduleHierarchy: ModuleNode[] = JSON.parse(JSON.stringify(MODULE_HIERARCHY)); // Deep clone so multiple renders don't conflict
 
   selectedClientId: string = '';
   plan: string = '';
   expirationDate: string = '';
-  selectedModulesMap: { [key: string]: boolean } = {};
   copiedKey: string | null = null;
+  selectedModules: any[] = [];
 
-  constructor(private alertService: AlertService) {
-    AVAILABLE_MODULES.forEach(module => {
-      this.selectedModulesMap[module] = false;
+  constructor(private alertService: AlertService) { }
+
+  toggleNodeExpand(node: ModuleNode): void {
+    node.expanded = !node.expanded;
+  }
+
+  onNodeSelectionChange(node: ModuleNode): void {
+    // Cascade selection down
+    this.cascadeSelection(node, !!node.selected);
+    // Recalculate parents up
+    this.updateParentSelectionStates(this.moduleHierarchy);
+  }
+
+  cascadeSelection(node: ModuleNode, isSelected: boolean): void {
+    node.selected = isSelected;
+    node.indeterminate = false;
+    if (node.children && node.children.length > 0) {
+      node.children.forEach(child => this.cascadeSelection(child, isSelected));
+    }
+  }
+
+  updateParentSelectionStates(nodes: ModuleNode[]): void {
+    nodes.forEach(node => {
+      if (node.children && node.children.length > 0) {
+        this.updateParentSelectionStates(node.children);
+
+        const allSelected = node.children.every(child => child.selected);
+        const someSelected = node.children.some(child => child.selected || child.indeterminate);
+
+        node.selected = allSelected;
+        node.indeterminate = someSelected && !allSelected;
+      }
     });
+  }
+
+  buildSelectedTree(nodes: ModuleNode[]): any[] {
+    const result: any[] = [];
+    for (const node of nodes) {
+      if (node.selected || node.indeterminate) {
+        const copy: any = {
+          id: node.id,
+          label: node.label,
+          type: node.type,
+          sortOrder: node.sortOrder,
+          children: []
+        };
+        if (node.children && node.children.length > 0) {
+          copy.children = this.buildSelectedTree(node.children);
+        }
+        result.push(copy);
+      }
+    }
+    return result;
   }
 
   getTodayDate(): string {
@@ -67,7 +513,7 @@ export class KeyGeneratorComponent {
   }
 
   handleGenerate(): void {
-    const selectedModules = AVAILABLE_MODULES.filter(m => this.selectedModulesMap[m]);
+    const selectedModules = this.buildSelectedTree(this.moduleHierarchy);
     const selectedClient = this.getSelectedClient();
     const displayName = this.getClientDisplayName(selectedClient);
 
@@ -82,11 +528,12 @@ export class KeyGeneratorComponent {
     }
 
     if (selectedModules.length === 0) {
-      this.alertService.warning('Please select at least one module');
+      this.alertService.warning('Please select at least one module or attribute');
       return;
     }
 
     const key = this.generateRandomKey(this.plan, displayName);
+    this.selectedModules = selectedModules; // Keep track of generated output if UI wants to bind later
 
     // Emit both the key data and the clientId
     this.onGenerateKey.emit({
@@ -110,9 +557,7 @@ export class KeyGeneratorComponent {
     this.selectedClientId = '';
     this.plan = '';
     this.expirationDate = '';
-    AVAILABLE_MODULES.forEach(module => {
-      this.selectedModulesMap[module] = false;
-    });
+    this.moduleHierarchy = JSON.parse(JSON.stringify(MODULE_HIERARCHY)); // Reset hierarchy clone
   }
 
   handleCopyKey(key: string): void {
@@ -144,14 +589,14 @@ export class KeyGeneratorComponent {
       const now = new Date();
       const diffInMs = now.getTime() - date.getTime();
       const diffInMinutes = Math.floor(diffInMs / 60000);
-      
+
       if (diffInMinutes < 1) return 'just now';
       if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
       const diffInHours = Math.floor(diffInMinutes / 60);
       if (diffInHours < 24) return `${diffInHours}h ago`;
       const diffInDays = Math.floor(diffInHours / 24);
       if (diffInDays < 7) return `${diffInDays}d ago`;
-      
+
       return format(date, 'MMM dd');
     } catch {
       return dateString;
@@ -193,5 +638,5 @@ export class KeyGeneratorComponent {
   }
 }
 
-            
-             
+
+

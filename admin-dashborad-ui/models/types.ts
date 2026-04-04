@@ -13,14 +13,14 @@ export interface Client {
 
 export interface GeneratedKey {
   clientId: string;
-clientName: string;
- plan: string;
- expirationDate: string;
- daysRemaining: number;
- status: string;
- key ?: string;
- modules?: string[];
- email?: string;
+  clientName: string;
+  plan: string;
+  expirationDate: string;
+  daysRemaining: number;
+  status?: string;
+  key ?: string;
+  modules?: any[];
+  email?: string;
  contactNumber?: string;
  contactPerson?: string;
  address?: string;

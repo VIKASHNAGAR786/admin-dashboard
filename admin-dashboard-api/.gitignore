@@ -51,3 +51,7 @@ Thumbs.db
 # Misc
 .cache/
 *.pem
+
+# Database
+*.sqlite
+*.sqlite-journal

@@ -1,10 +1,6 @@
 export const databaseConfig = {
-  type: 'mysql' as const,
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '3306'),
-  username: process.env.DB_USERNAME || 'root',
-  password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : 'admin',
-  database: process.env.DB_NAME || 'admin_dashboard_db',
+  type: 'sqlite' as const,
+  database: process.env.DB_DATABASE || 'database.sqlite',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/../migrations/*{.ts,.js}'],
   subscribers: [__dirname + '/../subscribers/*{.ts,.js}'],
@@ -14,7 +10,7 @@ export const databaseConfig = {
 };
 
 export const jwtConfig = {
-  secret: process.env.JWT_SECRET || 'your_super_secret_jwt_key_change_in_production',
+  secret: process.env.JWT_SECRET || '7fK9$zQ!mL2@vX8*pR6^TnA1&dW4*YhC0uJxS5eB3gHq9LkZ!M2rV8pN6tF4',
   signOptions: {
     expiresIn: process.env.JWT_EXPIRATION || 3600,
   },

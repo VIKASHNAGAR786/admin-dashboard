@@ -5,12 +5,17 @@ import { AccessKey } from './entities/access-key.entity';
 import { GenerateAccessKeyDto } from './dto/access-key.dto';
 import { v4 as uuid } from 'uuid';
 import * as crypto from 'crypto';
+import { JwtService } from '@nestjs/jwt';
+import { Client } from '../clients/entities/client.entity';
 
 @Injectable()
 export class AccessKeysService {
   constructor(
     @InjectRepository(AccessKey)
     private accessKeysRepository: Repository<AccessKey>,
+    @InjectRepository(Client)
+    private clientsRepository: Repository<Client>,
+    private jwtService: JwtService,
   ) {}
 
   async checkExistingValidKey(clientId: string): Promise<AccessKey | null> {
@@ -43,11 +48,14 @@ export class AccessKeysService {
 
   async generate(generateDto: GenerateAccessKeyDto): Promise<AccessKey> {
     try {
-      // Generate unique key format: PREFIX-RANDOM-UNIQUE
-      const key = `AK_${uuid().replace(/-/g, '').toUpperCase().slice(0, 20)}_${Date.now().toString(36).toUpperCase()}`;
+      const client = await this.clientsRepository.findOne({ where: { id: generateDto.clientId } });
+      if (!client) {
+        throw new Error('Client not found');
+      }
 
       // Ensure expiration date is a valid Date object
       let expirationDate: Date | null = null;
+      let expiresInSeconds: number | undefined = undefined;
       if (generateDto.expirationDate) {
         if (typeof generateDto.expirationDate === 'string') {
           expirationDate = new Date(generateDto.expirationDate);
@@ -58,7 +66,26 @@ export class AccessKeysService {
         if (isNaN(expirationDate.getTime())) {
           throw new Error('Invalid expiration date format');
         }
+        expiresInSeconds = Math.floor((expirationDate.getTime() - Date.now()) / 1000);
       }
+
+      const payload = {
+        jti: uuid(),
+        clientId: client.id,
+        companyName: client.companyName,
+        email: client.email,
+        contactPerson: client.contactPerson,
+        modules: generateDto.modules || [],
+        expirationDate: expirationDate,
+        createdAt: new Date().toISOString(),
+      };
+
+      const signOptions: any = {};
+      if (expiresInSeconds && expiresInSeconds > 0) {
+        signOptions.expiresIn = expiresInSeconds;
+      }
+      
+      const key = this.jwtService.sign(payload, signOptions);
 
       console.log('Creating access key with:', {
         key,

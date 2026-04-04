@@ -7,7 +7,7 @@ export class AccessKey {
   @PrimaryGeneratedColumn('uuid')
   id: string = uuid();
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'text', unique: true })
   key: string;
 
   @Column({ type: 'varchar', length: 36 })
@@ -18,7 +18,7 @@ export class AccessKey {
   client: Client;
 
   @Column({ type: 'simple-json', nullable: true })
-  modules: string[];
+  modules: any[];
 
   @Column({ type: 'date', nullable: true })
   expirationDate: Date;
@@ -26,7 +26,7 @@ export class AccessKey {
   @Column({ type: 'varchar', length: 50, default: 'active' })
   status: string = 'active';
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   lastUsed: Date;
 
   @CreateDateColumn()
