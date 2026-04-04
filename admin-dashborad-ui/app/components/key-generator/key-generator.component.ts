@@ -18,6 +18,23 @@ export interface ModuleNode {
 
 const MODULE_HIERARCHY: ModuleNode[] = [
   {
+    "id": 0,
+    "label": "Dashboard",
+    "type": "module",
+    "sortOrder": 0,
+    "children": [
+      {
+        "id": 100,
+        "label": "Main Dashboard",
+        "type": "submodule",
+        "sortOrder": 1,
+        "children": [
+          { "id": 10000, "label": "Overview", "type": "tab", "sortOrder": 1, "children": [] }
+        ]
+      }
+    ]
+  },
+  {
     "id": 1,
     "label": "Unified Sales",
     "type": "module",
