@@ -403,7 +403,9 @@ const MODULE_HIERARCHY: ModuleNode[] = [
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 14001, "label": "Banking", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14001, "label": "Party Statement`", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14002, "label": "Balance Due", "type": "tab", "sortOrder": 2, "children": [] },
+          { "id": 14003, "label": "Cheque Summary", "type": "tab", "sortOrder": 3, "children": [] }
         ]
       },
       {

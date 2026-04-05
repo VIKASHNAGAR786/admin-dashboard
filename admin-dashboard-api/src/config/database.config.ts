@@ -17,6 +17,6 @@ export const jwtConfig = {
 };
 
 export const corsConfig = {
-  origin: (process.env.CORS_ORIGIN || 'http://localhost:4200').split(','),
+  origin: (process.env.CORS_ORIGIN || 'http://localhost:57882').split(','),
   credentials: true,
 };
