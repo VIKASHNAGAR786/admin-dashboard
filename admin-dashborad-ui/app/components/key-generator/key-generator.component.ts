@@ -18,420 +18,421 @@ export interface ModuleNode {
 
 const MODULE_HIERARCHY: ModuleNode[] = [
   {
-    "id": 0,
+    "id": 14096,
     "label": "Dashboard",
     "type": "module",
     "sortOrder": 0,
     "children": [
       {
-        "id": 100,
+        "id": 14097,
         "label": "Main Dashboard",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 10000, "label": "Overview", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14098, "label": "Overview", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 1,
+    "id": 14099,
     "label": "Unified Sales",
     "type": "module",
     "sortOrder": 1,
     "expanded": true,
     "children": [
       {
-        "id": 101,
+        "id": 14100,
         "label": "Sales",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 10001, "label": "Make Sale", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 10002, "label": "Sale Report", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14101, "label": "Make Sale", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14102, "label": "Sale Report", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 2,
+    "id": 14103,
     "label": "Garment Store",
     "type": "module",
     "sortOrder": 2,
     "expanded": true,
     "children": [
       {
-        "id": 201,
+        "id": 14104,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 2001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 2002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14105, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14106, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 202,
+        "id": 14107,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 2003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14108, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 3,
+    "id": 14109,
     "label": "Footwear Store",
     "type": "module",
     "sortOrder": 3,
     "expanded": true,
     "children": [
       {
-        "id": 301,
+        "id": 14110,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 3001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 3002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14111, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14112, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 302,
+        "id": 14113,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 3003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14114, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 4,
+    "id": 14115,
     "label": "Auto Parts",
     "type": "module",
     "sortOrder": 4,
     "expanded": true,
     "children": [
       {
-        "id": 401,
+        "id": 14116,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 4001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 4002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14117, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14118, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 402,
+        "id": 14119,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 4003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14120, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 5,
+    "id": 14121,
     "label": "Furniture Store",
     "type": "module",
     "sortOrder": 5,
     "expanded": true,
     "children": [
       {
-        "id": 501,
+        "id": 14122,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 5001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 5002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14123, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14124, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 502,
+        "id": 14125,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 5003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14126, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 6,
+    "id": 14127,
     "label": "Optical Store",
     "type": "module",
     "sortOrder": 6,
     "expanded": true,
     "children": [
       {
-        "id": 601,
+        "id": 14128,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 6001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 6002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14129, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14130, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 602,
+        "id": 14131,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 6003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14132, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 7,
+    "id": 14176,
     "label": "Pharmacy Store",
     "type": "module",
     "sortOrder": 7,
     "expanded": true,
     "children": [
       {
-        "id": 701,
+        "id": 14177,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 7001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 7002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14178, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14179, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 702,
+        "id": 14180,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 7003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14181, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 8,
+    "id": 14182,
     "label": "Sports Shop",
     "type": "module",
     "sortOrder": 8,
     "expanded": true,
     "children": [
       {
-        "id": 801,
+        "id": 14183,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 8001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 8002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14184, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14185, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 802,
+        "id": 14186,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 8003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14187, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 9,
+    "id": 14133,
     "label": "Supermarket",
     "type": "module",
     "sortOrder": 9,
     "expanded": true,
     "children": [
       {
-        "id": 901,
+        "id": 14134,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 9001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 9002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14135, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14136, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 902,
+        "id": 14137,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 9003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14138, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 10,
+    "id": 14139,
     "label": "Electronics",
     "type": "module",
     "sortOrder": 10,
     "expanded": true,
     "children": [
       {
-        "id": 1001,
+        "id": 14140,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 10101, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 10102, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14141, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14142, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 1002,
+        "id": 14143,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 10103, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14144, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 11,
+    "id": 14145,
     "label": "Mobile Phone Shop",
     "type": "module",
     "sortOrder": 11,
     "expanded": true,
     "children": [
       {
-        "id": 1101,
+        "id": 14146,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 11001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 11002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14147, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14148, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 1102,
+        "id": 14149,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 11003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14150, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 12,
+    "id": 14151,
     "label": "Apparel Outlet",
     "type": "module",
     "sortOrder": 12,
     "expanded": true,
     "children": [
       {
-        "id": 1201,
+        "id": 14152,
         "label": "Inventory",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 12001, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 12002, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14153, "label": "Add Product", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14154, "label": "Product List", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 1202,
+        "id": 14155,
         "label": "Settings",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 12003, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14156, "label": "General Settings", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 13,
+    "id": 14157,
     "label": "Contacts",
     "type": "module",
     "sortOrder": 13,
     "expanded": true,
     "children": [
       {
-        "id": 1301,
+        "id": 14158,
         "label": "Customers",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 13001, "label": "View", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 13002, "label": "Manage", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14159, "label": "View", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14160, "label": "Manage", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       },
       {
-        "id": 1302,
+        "id": 14161,
         "label": "Suppliers",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 13003, "label": "View", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 13004, "label": "Manage", "type": "tab", "sortOrder": 2, "children": [] }
+          { "id": 14162, "label": "View", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14163, "label": "Manage", "type": "tab", "sortOrder": 2, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 14,
+    "id": 14164,
     "label": "System & Accounts",
     "type": "module",
     "sortOrder": 14,
     "expanded": true,
     "children": [
       {
-        "id": 1401,
+        "id": 14165,
         "label": "Accounts",
         "type": "submodule",
         "sortOrder": 1,
         "children": [
-          { "id": 14001, "label": "Party Statement`", "type": "tab", "sortOrder": 1, "children": [] },
-          { "id": 14002, "label": "Balance Due", "type": "tab", "sortOrder": 2, "children": [] },
-          { "id": 14003, "label": "Cheque Summary", "type": "tab", "sortOrder": 3, "children": [] }
+          { "id": 14166, "label": "Party Statement", "type": "tab", "sortOrder": 1, "children": [] },
+          { "id": 14167, "label": "Balance Due", "type": "tab", "sortOrder": 2, "children": [] },
+          { "id": 14168, "label": "Cheque Summary", "type": "tab", "sortOrder": 3, "children": [] }
         ]
       },
       {
-        "id": 1402,
+        "id": 14169,
         "label": "User Management",
         "type": "submodule",
         "sortOrder": 2,
         "children": [
-          { "id": 14002, "label": "Manage Access", "type": "tab", "sortOrder": 1, "children": [] }
+          { "id": 14170, "label": "Manage Access", "type": "tab", "sortOrder": 1, "children": [] }
         ]
       }
     ]
   },
   {
-    "id": 15,
+    "id": 14171,
     "label": "System Setting",
     "type": "module",
     "sortOrder": 15,
     "children": [
-      { "id": 15001, "label": "Sales Settings", "type": "tab", "sortOrder": 1, "children": [] },
-      { "id": 15002, "label": "Formate Editor", "type": "tab", "sortOrder": 2, "children": [] },
-      { "id": 15003, "label": "Hsn Master", "type": "tab", "sortOrder": 3, "children": [] },
-      { "id": 15004, "label": "Version Control", "type": "tab", "sortOrder": 4, "children": [] }
+      { "id": 14172, "label": "Sales Settings", "type": "tab", "sortOrder": 1, "children": [] },
+      { "id": 14173, "label": "Formate Editor", "type": "tab", "sortOrder": 2, "children": [] },
+      { "id": 14174, "label": "Hsn Master", "type": "tab", "sortOrder": 3, "children": [] },
+      { "id": 14175, "label": "Version Control", "type": "tab", "sortOrder": 4, "children": [] }
     ]
   }
 ];
+
 
 @Component({
   selector: 'app-key-generator',
