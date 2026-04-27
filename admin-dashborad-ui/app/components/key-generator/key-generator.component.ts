@@ -428,7 +428,8 @@ const MODULE_HIERARCHY: ModuleNode[] =
         { "id": 14173, "label": "Formate Editor", "type": "tab", "sortOrder": 2, "children": [] },
         { "id": 14174, "label": "Hsn Master", "type": "tab", "sortOrder": 3, "children": [] },
         { "id": 14175, "label": "Version Control", "type": "tab", "sortOrder": 4, "children": [] },
-        { "id": 14203, "label": "UPI Configuration", "type": "tab", "sortOrder": 5, "children": [] }
+        { "id": 14203, "label": "UPI Configuration", "type": "tab", "sortOrder": 5, "children": [] },
+        { "id": 14206, "label": "Backup Config", "type": "tab", "sortOrder": 6, "children": [] }
       ]
     },
     {
@@ -501,6 +502,7 @@ export class KeyGeneratorComponent {
   expirationDate: string = '';
   copiedKey: string | null = null;
   selectedModules: any[] = [];
+  selectedKeyDetails: any = null;
 
   constructor(private alertService: AlertService) { }
 
@@ -561,15 +563,12 @@ export class KeyGeneratorComponent {
     return new Date().toISOString().split('T')[0];
   }
 
-  generateRandomKey(plan: string, company: string): string {
-    const planPrefix = plan.substring(0, 3).toUpperCase();
-    const companyPrefix = (company || 'UNKNOWN')
-      .substring(0, 4)
-      .toUpperCase()
-      .replace(/[^A-Z]/g, 'X');
-    const year = new Date().getFullYear();
-    const randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
-    return `${planPrefix}-${companyPrefix}-${year}-${randomString}`;
+  generateRandomKey(payload: any): string {
+    // We use PascalCase for the JSON keys to match the C# backend expectations
+    const jsonStr = JSON.stringify(payload);
+    // In a real production app, you would encrypt this string with a shared secret here.
+    // For now, we use Base64 to satisfy the "contains details" and "can be extracted" requirement.
+    return btoa(jsonStr);
   }
 
   getSelectedClient(): Client | undefined {
@@ -600,14 +599,28 @@ export class KeyGeneratorComponent {
       return;
     }
 
-    const key = this.generateRandomKey(this.plan, displayName);
-    this.selectedModules = selectedModules; // Keep track of generated output if UI wants to bind later
+    // Create the structured payload that the ERP system expects
+    const payload = {
+      ClientId: this.selectedClientId,
+      CompanyName: displayName,
+      Email: selectedClient?.email || '',
+      ContactNumber: selectedClient?.contactNumber || '',
+      ContactPerson: selectedClient?.contactPerson || '',
+      Address: selectedClient?.address || '',
+      Plan: this.plan,
+      ExpirationDate: this.expirationDate,
+      Modules: selectedModules,
+      GeneratedAt: new Date().toISOString()
+    };
+
+    const key = this.generateRandomKey(payload);
+    this.selectedModules = selectedModules;
 
     // Emit both the key data and the clientId
     this.onGenerateKey.emit({
       key,
       clientId: this.selectedClientId,
-      companyName: displayName,
+      clientName: displayName, // Map to clientName in GeneratedKey interface
       plan: this.plan,
       expirationDate: this.expirationDate,
       modules: selectedModules,
@@ -633,6 +646,23 @@ export class KeyGeneratorComponent {
       this.copiedKey = key;
       setTimeout(() => (this.copiedKey = null), 2000);
     });
+  }
+
+  viewKeyDetails(key: string): void {
+    if (this.selectedKeyDetails && this.selectedKeyDetails.rawKey === key) {
+      this.selectedKeyDetails = null;
+      return;
+    }
+
+    try {
+      // Decode Base64 JSON payload
+      const payload = JSON.parse(atob(key));
+      this.selectedKeyDetails = { ...payload, rawKey: key };
+      this.alertService.success('Key decrypted successfully!');
+    } catch (e) {
+      console.error('Decryption failed:', e);
+      this.alertService.error('This key is not in a decodable format');
+    }
   }
 
   formatDate(dateString: string): string {
