@@ -4,9 +4,9 @@ import { Repository } from 'typeorm';
 import { AccessKey } from './entities/access-key.entity';
 import { GenerateAccessKeyDto } from './dto/access-key.dto';
 import { v4 as uuid } from 'uuid';
-import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { Client } from '../clients/entities/client.entity';
+import { googleConfig } from '../config/database.config';
 
 @Injectable()
 export class AccessKeysService {
@@ -21,96 +21,57 @@ export class AccessKeysService {
   async checkExistingValidKey(clientId: string): Promise<AccessKey | null> {
     try {
       const existingKey = await this.accessKeysRepository.findOne({
-        where: {
-          clientId,
-          status: 'active',
-        },
+        where: { clientId, status: 'active' },
         order: { createdAt: 'DESC' },
       });
-
-      if (!existingKey) {
-        return null;
-      }
-
-      // Check if key is expired
+      if (!existingKey) return null;
       if (existingKey.expirationDate && new Date(existingKey.expirationDate) < new Date()) {
-        // Mark as expired
         await this.accessKeysRepository.update(existingKey.id, { status: 'expired' });
         return null;
       }
-
       return existingKey;
     } catch (error) {
-      console.error('Error checking existing key:', error);
       return null;
     }
   }
 
   async generate(generateDto: GenerateAccessKeyDto): Promise<AccessKey> {
-    try {
-      const client = await this.clientsRepository.findOne({ where: { id: generateDto.clientId } });
-      if (!client) {
-        throw new Error('Client not found');
-      }
+    const client = await this.clientsRepository.findOne({ where: { id: generateDto.clientId } });
+    if (!client) throw new Error('Client not found');
 
-      // Ensure expiration date is a valid Date object
-      let expirationDate: Date | null = null;
-      let expiresInSeconds: number | undefined = undefined;
-      if (generateDto.expirationDate) {
-        if (typeof generateDto.expirationDate === 'string') {
-          expirationDate = new Date(generateDto.expirationDate);
-        } else if (generateDto.expirationDate instanceof Date) {
-          expirationDate = generateDto.expirationDate;
-        }
-        
-        if (isNaN(expirationDate.getTime())) {
-          throw new Error('Invalid expiration date format');
-        }
-        expiresInSeconds = Math.floor((expirationDate.getTime() - Date.now()) / 1000);
-      }
-
-      const payload = {
-        jti: uuid(),
-        clientId: client.id,
-        companyName: client.companyName,
-        email: client.email,
-        contactPerson: client.contactPerson,
-        modules: generateDto.modules || [],
-        expirationDate: expirationDate,
-        createdAt: new Date().toISOString(),
-      };
-
-      const signOptions: any = {};
-      if (expiresInSeconds && expiresInSeconds > 0) {
-        signOptions.expiresIn = expiresInSeconds;
-      }
-      
-      const key = this.jwtService.sign(payload, signOptions);
-
-      console.log('Creating access key with:', {
-        key,
-        clientId: generateDto.clientId,
-        modules: generateDto.modules,
-        expirationDate,
-      });
-
-      const accessKey = this.accessKeysRepository.create({
-        key,
-        clientId: generateDto.clientId,
-        modules: generateDto.modules || [],
-        expirationDate,
-        status: 'active',
-      });
-
-      console.log('Access key entity created:', accessKey);
-      const savedKey = await this.accessKeysRepository.save(accessKey);
-      console.log('Access key saved to database:', savedKey);
-
-      return savedKey;
-    } catch (error) {
-      console.error('Error in generate service method:', error);
-      throw error;
+    let expirationDate: Date | null = null;
+    let expiresInSeconds: number | undefined = undefined;
+    if (generateDto.expirationDate) {
+      expirationDate = new Date(generateDto.expirationDate);
+      expiresInSeconds = Math.floor((expirationDate.getTime() - Date.now()) / 1000);
     }
+
+    const payload = {
+      jti: uuid(),
+      clientId: client.id,
+      companyName: client.companyName,
+      email: client.email,
+      modules: generateDto.modules || [],
+      expirationDate: expirationDate,
+      createdAt: new Date().toISOString(),
+    };
+
+    const key = this.jwtService.sign(payload, expiresInSeconds && expiresInSeconds > 0 ? { expiresIn: expiresInSeconds } : {});
+
+    const accessKey = this.accessKeysRepository.create({
+      key,
+      clientId: generateDto.clientId,
+      modules: generateDto.modules || [],
+      expirationDate,
+      status: 'active',
+    });
+
+    const savedKey = await this.accessKeysRepository.save(accessKey);
+    
+    // Sync immediately (Async)
+    this.syncToGoogleSheets(savedKey, 'CREATE', client).catch(() => {});
+
+    return savedKey;
   }
 
   async findAll(page: number = 1, limit: number = 10) {
@@ -121,80 +82,107 @@ export class AccessKeysService {
       order: { createdAt: 'DESC' },
       relations: ['client'],
     });
-
-    return {
-      data: keys,
-      total,
-      page,
-      limit,
-      pages: Math.ceil(total / limit),
-    };
+    return { data: keys, total, page, limit, pages: Math.ceil(total / limit) };
   }
 
   async findOne(id: string): Promise<AccessKey> {
-    try {
-      const key = await this.accessKeysRepository.findOne({ 
-        where: { id },
-        relations: ['client'],
-      });
-      if (!key) {
-        throw new Error(`Access key with ID ${id} not found`);
-      }
-      return key;
-    } catch (error) {
-      console.error('Error finding access key:', error);
-      throw error;
-    }
+    const key = await this.accessKeysRepository.findOne({ where: { id }, relations: ['client'] });
+    if (!key) throw new Error(`Access key not found`);
+    return key;
   }
 
-  async validateKey(key: string) {
+  async validateKey(key: string, deviceId?: string, ipAddress?: string) {
     const accessKey = await this.accessKeysRepository.findOne({
       where: { key, status: 'active' },
       relations: ['client'],
     });
 
-    if (!accessKey) {
-      return { valid: false, message: 'Invalid or inactive key' };
-    }
+    if (!accessKey) return { valid: false, message: 'Invalid or inactive key' };
 
-    // Check expiration
     if (accessKey.expirationDate && new Date(accessKey.expirationDate) < new Date()) {
       return { valid: false, message: 'Key has expired' };
     }
 
-    // Update last used
-    await this.accessKeysRepository.update(accessKey.id, { lastUsed: new Date() });
+    if (deviceId) {
+      if (!accessKey.deviceId) {
+        accessKey.deviceId = deviceId;
+      } else if (accessKey.deviceId !== deviceId) {
+        return { valid: false, message: 'Access Denied: Registered to another device.' };
+      }
+    }
 
-    return {
-      valid: true,
-      key: accessKey,
-      client: accessKey.client,
-      modules: accessKey.modules,
-    };
+    accessKey.lastUsed = new Date();
+    accessKey.usageCount = (accessKey.usageCount || 0) + 1;
+    if (ipAddress) accessKey.lastIp = ipAddress;
+
+    const updatedKey = await this.accessKeysRepository.save(accessKey);
+
+    // Sync usage immediately
+    this.syncToGoogleSheets(updatedKey, 'VALIDATE', updatedKey.client).catch(() => {});
+
+    return { valid: true, key: updatedKey, client: updatedKey.client, modules: updatedKey.modules };
+  }
+
+  private async syncToGoogleSheets(accessKey: AccessKey, action: string, clientInfo?: any) {
+    try {
+      if (!googleConfig.webhookUrl) return;
+
+      const payload = {
+        action,
+        id: accessKey.id,
+        key: accessKey.key,
+        clientId: accessKey.clientId,
+        companyName: clientInfo?.companyName || 'Unknown',
+        email: clientInfo?.email || 'Unknown',
+        deviceId: accessKey.deviceId || 'Not Registered',
+        lastIp: accessKey.lastIp || 'N/A',
+        usageCount: accessKey.usageCount || 0,
+        status: accessKey.status,
+        expirationDate: accessKey.expirationDate,
+        lastUsed: accessKey.lastUsed,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Use fire-and-forget approach for speed
+      fetch(googleConfig.webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
+      
+    } catch (error) {
+      // Fail silently to not block the main app
+    }
+  }
+
+  async fetchGoogleSheetData() {
+    try {
+      const response = await fetch(googleConfig.webhookUrl + '?action=FETCH');
+      return await response.json();
+    } catch (error) {
+      throw new Error('Could not fetch tracking data');
+    }
   }
 
   async revoke(id: string): Promise<void> {
-    await this.findOne(id);
+    const key = await this.findOne(id);
     await this.accessKeysRepository.update(id, { status: 'revoked' });
+    key.status = 'revoked';
+    this.syncToGoogleSheets(key, 'REVOKE', key.client).catch(() => {});
   }
 
   async getByClientId(clientId: string) {
     return this.accessKeysRepository.find({
       where: { clientId },
+      relations: ['client'],
       order: { createdAt: 'DESC' },
     });
   }
 
   async findByClientId(clientId: string, status?: string) {
-    const whereClause: any = { clientId };
-    if (status) {
-      whereClause.status = status;
-    }
-    
-    return this.accessKeysRepository.find({
-      where: whereClause,
-      order: { createdAt: 'DESC' },
-    });
+    const where: any = { clientId };
+    if (status) where.status = status;
+    return this.accessKeysRepository.find({ where, order: { createdAt: 'DESC' } });
   }
 
   async countByClientId(clientId: string): Promise<number> {

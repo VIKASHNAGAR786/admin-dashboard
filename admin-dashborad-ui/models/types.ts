@@ -27,4 +27,7 @@ export interface GeneratedKey {
  createdAt?: string;
  updatedAt?: string;
  accessKey?: string; // For backward compatibility with API response
+ deviceId?: string;
+ usageCount?: number;
+ lastIp?: string;
 }

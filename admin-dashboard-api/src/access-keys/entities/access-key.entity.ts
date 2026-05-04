@@ -20,6 +20,15 @@ export class AccessKey {
   @Column({ type: 'simple-json', nullable: true })
   modules: any[];
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  deviceId: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  lastIp: string;
+
+  @Column({ type: 'int', default: 0 })
+  usageCount: number;
+
   @Column({ type: 'date', nullable: true })
   expirationDate: Date;
 

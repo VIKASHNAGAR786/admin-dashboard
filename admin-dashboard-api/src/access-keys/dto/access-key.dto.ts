@@ -16,6 +16,10 @@ export class GenerateAccessKeyDto {
 export class ValidateAccessKeyDto {
   @IsString()
   key: string;
+
+  @IsString()
+  @IsOptional()
+  deviceId?: string;
 }
 
 export class AccessKeyResponseDto {
@@ -23,6 +27,9 @@ export class AccessKeyResponseDto {
   key: string;
   clientId: string;
   modules: any[];
+  deviceId: string;
+  lastIp: string;
+  usageCount: number;
   expirationDate: Date;
   status: string;
   createdAt: Date;

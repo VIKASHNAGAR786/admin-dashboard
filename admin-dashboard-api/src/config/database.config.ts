@@ -20,3 +20,7 @@ export const corsConfig = {
   origin: (process.env.CORS_ORIGIN || 'http://localhost:4200').split(','),
   credentials: true,
 };
+
+export const googleConfig = {
+  webhookUrl: process.env.GOOGLE_SHEET_WEBHOOK_URL || 'https://script.google.com/macros/s/AKfycbyw4O8wPa5iApsf9T9Wc3hrwQysrRZ67DDetHpWV1RWNvKrQCXInarHwn_3zlCxffzE/exec', // Default placeholder
+};

@@ -198,11 +198,26 @@ export class DataService {
   /**
    * Validate an access key
    */
-  validateKey(key: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/access-keys/validate/${key}`).pipe(
+  validateKey(key: string, deviceId?: string): Observable<any> {
+    const params: any = {};
+    if (deviceId) params.deviceId = deviceId;
+    
+    return this.http.get(`${this.apiUrl}/access-keys/validate/${key}`, { params }).pipe(
       catchError((error) => {
         console.error('Error validating key:', error);
         throw error;
+      })
+    );
+  }
+
+  /**
+   * Get live tracking data from Google Sheets
+   */
+  getLiveLogs(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/access-keys/live-tracking`).pipe(
+      catchError((error) => {
+        console.error('Error fetching live logs:', error);
+        return of([]);
       })
     );
   }

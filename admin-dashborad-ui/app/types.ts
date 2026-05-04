@@ -27,4 +27,7 @@ export interface GeneratedKey {
   contactNumber: string;
   contactPerson: string;
   address?: string;
+  deviceId?: string;
+  usageCount?: number;
+  lastIp?: string;
 }
