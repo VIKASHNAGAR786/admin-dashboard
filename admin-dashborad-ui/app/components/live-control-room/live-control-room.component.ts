@@ -88,4 +88,25 @@ export class LiveControlRoomComponent implements OnInit, OnDestroy {
     localStorage.removeItem('isAdminAuthenticated');
     this.router.navigate(['/logout']);
   }
+
+  deactivateKey(keyId: string): void {
+    if (!keyId) {
+      this.alertService.error('Key ID not found for this record');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to deactivate this access key? This action cannot be undone.')) {
+      return;
+    }
+
+    this.dataService.deactivateKey(keyId).subscribe({
+      next: (res) => {
+        this.alertService.success(res.message || 'Access key deactivated successfully');
+        this.refreshNow(); // Refresh the list
+      },
+      error: (err) => {
+        this.alertService.error(err.error?.message || 'Failed to deactivate key');
+      }
+    });
+  }
 }

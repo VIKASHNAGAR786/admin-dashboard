@@ -288,4 +288,17 @@ export class DataService {
       })
     );
   }
+
+  /**
+   * Deactivate an access key by its UUID
+   * @param id The unique UUID of the Access Key record
+   */
+  deactivateKey(id: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/access-keys/deactivate/${id}`, {}).pipe(
+      catchError((error) => {
+        console.error('Error deactivating key:', error);
+        throw error;
+      })
+    );
+  }
 }

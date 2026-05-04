@@ -60,6 +60,7 @@
               <th class="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Device Details</th>
               <th class="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Network / IP</th>
               <th class="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Status</th>
+              <th class="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
@@ -71,11 +72,11 @@
               <td class="px-6 py-5">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
-                    {{ (log.CompanyName || log.Client || '?')[0] }}
+                    {{ (log['Client Name'] || log.CompanyName || log.Client || '?')[0] }}
                   </div>
                   <div>
-                    <p class="text-sm font-black text-gray-900">{{ log.CompanyName || log.Client }}</p>
-                    <p class="text-[10px] text-indigo-500 font-bold uppercase tracking-tight">{{ log.Plan || 'Unknown Plan' }}</p>
+                    <p class="text-sm font-black text-gray-900">{{ log['Client Name'] || log.CompanyName || log.Client || 'Unknown Client' }}</p>
+                    <p class="text-[10px] text-indigo-500 font-bold uppercase tracking-tight">{{ log.Email || 'No Email' }}</p>
                   </div>
                 </div>
               </td>
@@ -86,9 +87,9 @@
                     <line x1="8" y1="21" x2="16" y2="21"/>
                     <line x1="12" y1="17" x2="12" y2="21"/>
                   </svg>
-                  <span class="text-xs font-mono font-bold text-gray-700 truncate max-w-[150px]">{{ log.DeviceId || 'No ID' }}</span>
+                  <span class="text-xs font-mono font-bold text-gray-700 truncate max-w-[150px]">{{ log['Device ID'] || log.DeviceId || 'Not Registered' }}</span>
                 </div>
-                <p class="text-[10px] text-gray-500 font-medium italic">{{ log.DeviceInfo || 'Windows - Chrome' }}</p>
+                <p class="text-[10px] text-gray-500 font-medium italic">{{ log.Action || 'VALIDATE' }}</p>
               </td>
               <td class="px-6 py-5">
                 <div class="flex items-center gap-2 mb-1">
@@ -102,22 +103,34 @@
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                     <circle cx="12" cy="10" r="3"/>
                   </svg>
-                  Geo-tracking active
+                  Expires: {{ log.Expiration || 'N/A' | date:'MMM dd, yyyy' }}
                 </p>
               </td>
               <td class="px-6 py-5 text-center">
                 <span 
-                  [class]="getStatusClass(log.Status || log.active)"
+                  [class]="getStatusClass(log['Key Status'] || log.Status || log.active)"
                   class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm inline-block"
                 >
-                  {{ log.Status || log.active || 'Active' }}
+                  {{ log['Key Status'] || log.Status || log.active || 'Active' }}
                 </span>
+              </td>
+              <td class="px-6 py-5 text-right">
+                <button 
+                  (click)="deactivateKey(log['Key ID'])"
+                  [disabled]="!log['Key ID'] || (log['Key Status'] || log.Status)?.toLowerCase() === 'deactivated'"
+                  class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white p-2 rounded-lg transition-all border border-red-100 disabled:opacity-30 disabled:cursor-not-allowed group"
+                  title="Deactivate Key"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                  </svg>
+                </button>
               </td>
             </tr>
 
             <!-- Empty State -->
             <tr *ngIf="liveLogs.length === 0 && !isLoading">
-              <td colspan="5" class="py-20 text-center">
+              <td colspan="6" class="py-20 text-center">
                 <div class="flex flex-col items-center">
                   <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-gray-300 mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">

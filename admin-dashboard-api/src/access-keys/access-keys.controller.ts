@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Param, Body, Query, UseGuards, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Patch, Param, Body, Query, UseGuards, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { AccessKeysService } from './access-keys.service';
 import { GenerateAccessKeyDto, ValidateAccessKeyDto } from './dto/access-key.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -86,6 +86,16 @@ export class AccessKeysController {
       return { message: 'Access key revoked successfully' };
     } catch (error) {
       throw new InternalServerErrorException('Failed to revoke access key');
+    }
+  }
+
+  @Patch('deactivate/:id')
+  async deactivate(@Param('id') id: string) {
+    try {
+      await this.accessKeysService.revoke(id);
+      return { message: 'Access key deactivated successfully' };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to deactivate access key');
     }
   }
 }

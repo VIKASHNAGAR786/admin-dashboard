@@ -168,7 +168,8 @@ export class AccessKeysService {
     const key = await this.findOne(id);
     await this.accessKeysRepository.update(id, { status: 'revoked' });
     key.status = 'revoked';
-    this.syncToGoogleSheets(key, 'REVOKE', key.client).catch(() => {});
+    // Send to Google Sheet as DEACTIVATED
+    this.syncToGoogleSheets(key, 'DEACTIVATED', key.client).catch(() => {});
   }
 
   async getByClientId(clientId: string) {
