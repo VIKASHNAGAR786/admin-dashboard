@@ -1,0 +1,48 @@
+/* Main Layout with Sidebar */
+.main-layout {
+  margin-left: 80px;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  min-height: 100vh;
+}
+
+.main-layout.sidebar-open {
+  margin-left: 280px;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    margin-left: 0;
+  }
+  .main-layout.sidebar-open {
+    margin-left: 0;
+  }
+}
+
+/* Premium Professional Animations */
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-slideInDown {
+  animation: slideInDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}

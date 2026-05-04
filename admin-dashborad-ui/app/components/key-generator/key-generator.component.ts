@@ -734,6 +734,22 @@ export class KeyGeneratorComponent {
     if (days === 1) return 'Expires Tomorrow';
     return `${days} days remaining`;
   }
+
+  getPlanName(plan: any): string {
+    if (typeof plan === 'string') return plan;
+    if (Array.isArray(plan)) {
+      if (plan.length === 0) return 'No Modules';
+      const names = plan.map(p => p.label || p.name || 'Module');
+      if (names.length > 3) {
+        return names.slice(0, 3).join(', ') + ` +${names.length - 3} more`;
+      }
+      return names.join(', ');
+    }
+    if (plan && typeof plan === 'object') {
+      return plan.name || plan.label || 'Standard Plan';
+    }
+    return 'Basic';
+  }
 }
 
 

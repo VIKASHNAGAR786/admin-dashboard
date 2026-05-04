@@ -130,6 +130,8 @@
 
 .logo-text {
   animation: slideInLeft 0.5s ease-out;
+  color: white !important;
+  font-weight: 700;
 }
 
 /* Toggle Button */
@@ -139,12 +141,12 @@
   color: white;
   width: 40px;
   height: 40px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
   flex-shrink: 0;
   position: relative;
@@ -155,6 +157,7 @@
 .toggle-btn:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .toggle-btn:active {
@@ -180,15 +183,27 @@
 .nav-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
+  gap: 16px; /* Increased gap from 12px to 16px */
+  padding: 14px 20px; /* Increased vertical padding */
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
   position: relative;
-  overflow: hidden;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item.active::before {
+  transform: scaleY(0.6);
+  background: white;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
 }
 
 /* Collapsed state: center and pad icons only */
@@ -217,12 +232,13 @@
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  padding-left: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .nav-item:hover::before {
-  transform: scaleY(1);
+  transform: scaleY(0.4);
+  opacity: 0.5;
 }
 
 .icon {
@@ -289,29 +305,17 @@
 .footer-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
+  gap: 16px;
+  padding: 14px 20px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   user-select: none;
-}
-
-.footer-item .icon {
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  color: #ffffff;
-  stroke: #ffffff;
-}
-
-.footer-item .icon path {
-  stroke: #ffffff;
-  fill: none;
+  color: white;
 }
 
 .footer-item:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .footer-item:hover .icon {

@@ -87,7 +87,9 @@ export class DashboardService {
           return {
             clientId: client.id,
             clientName: client.companyName,
-            plan: key.modules?.join(', ') || 'N/A',
+            plan: Array.isArray(key.modules) 
+              ? key.modules.map(m => typeof m === 'object' ? m.label : m).join(', ') 
+              : 'N/A',
             expirationDate: key.expirationDate,
             daysRemaining: daysRemaining > 0 ? daysRemaining : 0,
             status: key.status,

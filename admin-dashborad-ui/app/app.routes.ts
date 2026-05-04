@@ -5,6 +5,7 @@ import { ClientsPageComponent } from './components/clients-page/clients-page.com
 import { LogoutPageComponent } from './components/logout-page/logout-page.component';
 import { AuthGuard } from '../guards/auth.guard';
 import { LiveControlRoomComponent } from './components/live-control-room/live-control-room.component';
+import { KeyGenerationPageComponent } from './components/key-generation-page/key-generation-page.component';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,11 @@ export const routes: Routes = [
   {
     path: 'live-control',
     component: LiveControlRoomComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'key-generation',
+    component: KeyGenerationPageComponent,
     canActivate: [AuthGuard]
   },
   {

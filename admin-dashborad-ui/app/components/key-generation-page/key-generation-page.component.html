@@ -1,0 +1,56 @@
+<!-- Sidebar -->
+<app-sidebar [isOpen]="sidebarOpen" (toggleSidebar)="handleToggleSidebar()"></app-sidebar>
+
+<!-- Main Layout -->
+<div class="main-layout" [class.sidebar-open]="sidebarOpen">
+  <!-- Premium Header -->
+  <div class="relative bg-gradient-to-br from-indigo-600 via-blue-700 to-indigo-800 shadow-2xl overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-0 left-0 w-96 h-96 bg-purple-400 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+      <div class="flex items-center justify-between">
+        <div class="text-white space-y-3">
+          <div class="flex items-center gap-4">
+            <div class="relative p-3 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/30 shadow-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-4xl font-black tracking-tight text-white">Key Management</h1>
+              <p class="text-blue-100 text-sm font-medium mt-1">Generate and monitor secure access keys</p>
+            </div>
+          </div>
+        </div>
+        
+        <button
+          (click)="handleLogout()"
+          class="flex items-center gap-3 bg-white/95 text-indigo-700 hover:bg-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-xl hover:scale-105"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="min-h-screen bg-gray-50/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <app-key-generator
+        [generatedKeys]="generatedKeys"
+        [clients]="clients"
+        (onGenerateKey)="handleGenerateKey($event)"
+      ></app-key-generator>
+    </div>
+  </div>
+</div>
+
+<!-- Alert Notification -->
+<app-alert-notification></app-alert-notification>

@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('access-keys')
 @UseGuards(JwtAuthGuard)
 export class AccessKeysController {
-  constructor(private accessKeysService: AccessKeysService) {}
+  constructor(private accessKeysService: AccessKeysService) { }
 
   /**
    * LIVE TRACKING DATA

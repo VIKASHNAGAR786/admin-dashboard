@@ -32,4 +32,8 @@ export class SidebarComponent implements OnChanges {
   navigateTo(route: string): void {
     this.router.navigate([route]);
   }
+
+  isActive(route: string): boolean {
+    return this.router.url === route || this.router.url.startsWith(route + '/');
+  }
 }

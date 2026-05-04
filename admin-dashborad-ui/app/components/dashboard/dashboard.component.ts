@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DashboardStatsComponent } from '../dashboard-stats/dashboard-stats.component';
-import { KeyGeneratorComponent } from '../key-generator/key-generator.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Client, GeneratedKey } from '../../../models/types';
 import { DataService } from '../../../services/data.service';
@@ -16,7 +15,6 @@ import { AlertService } from '../../../services/alert.service';
   imports: [
     CommonModule,
     DashboardStatsComponent,
-    KeyGeneratorComponent,
     SidebarComponent
   ],
   templateUrl: './dashboard.component.html',
@@ -91,47 +89,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  handleGenerateKey(keyData: any): void {
-    // Extract clientId from the emitted data
-    const { clientId, ...displayData } = keyData;
-    const expirationDate = keyData.expirationDate; // Already in YYYY-MM-DD format
-    
-    // Prepare request for backend
-    const backendRequest = {
-      clientId,
-      modules: keyData.modules,
-      expirationDate: expirationDate
-    };
-
-    console.log('Generating key with clientId:', clientId);
-    console.log('Backend request:', backendRequest);
-
-    this.dataService.addGeneratedKey(backendRequest).subscribe({
-      next: (response: any) => {
-        if (response.alreadyExists) {
-          // Key already exists
-          const expiryDate = new Date(response.existingKey.expirationDate).toLocaleDateString();
-          this.alertService.warning(
-            `Client already has an active key that expires on ${expiryDate}. No new key was generated.`,
-            7000
-          );
-          console.log('Existing key found for client:', response.existingKey);
-        } else {
-          // New key generated successfully
-          this.alertService.success('Access key generated successfully!');
-          console.log('Key generated successfully:', response);
-        }
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        console.error('Error generating key:', error);
-        const errorMessage = error.error?.message || error.message || 'Failed to generate key';
-        this.alertService.error(`Error: ${errorMessage}`);
-        this.cdr.markForCheck();
-      }
-    });
-  }
-
   handleCreateClient(clientData: any): void {
     console.log('Creating client:', clientData);
     
@@ -160,5 +117,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
   handleToggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
     this.cdr.markForCheck();
+  }
+
+  getPlanName(plan: any): string {
+    if (typeof plan === 'string') return plan;
+    if (Array.isArray(plan)) {
+      if (plan.length === 0) return 'No Modules';
+      const names = plan.map(p => p.label || p.name || 'Module');
+      if (names.length > 3) {
+        return names.slice(0, 3).join(', ') + ` +${names.length - 3} more`;
+      }
+      return names.join(', ');
+    }
+    if (plan && typeof plan === 'object') {
+      return plan.name || plan.label || 'Standard Plan';
+    }
+    return 'Basic';
   }
 }

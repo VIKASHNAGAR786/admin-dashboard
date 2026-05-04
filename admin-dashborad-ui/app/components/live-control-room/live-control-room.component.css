@@ -1,3 +1,23 @@
+/* Main Layout with Sidebar */
+.main-layout {
+  margin-left: 80px;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  min-height: 100vh;
+}
+
+.main-layout.sidebar-open {
+  margin-left: 280px;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    margin-left: 0;
+  }
+  .main-layout.sidebar-open {
+    margin-left: 0;
+  }
+}
+
 :host {
   display: block;
   background: #f9fafb;
