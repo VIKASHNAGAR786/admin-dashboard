@@ -385,7 +385,8 @@ const MODULE_HIERARCHY: ModuleNode[] =
           "sortOrder": 2,
           "children": [
             { "id": 14162, "label": "View", "type": "tab", "sortOrder": 1, "children": [] },
-            { "id": 14163, "label": "Manage", "type": "tab", "sortOrder": 2, "children": [] }
+            { "id": 14163, "label": "Manage", "type": "tab", "sortOrder": 2, "children": [] },
+            { "id": 14230, "label": "Product Mapping", "type": "tab", "sortOrder": 3, "children": [] }
           ]
         }
       ]
@@ -474,7 +475,81 @@ const MODULE_HIERARCHY: ModuleNode[] =
           "type": "submodule",
           "sortOrder": 2,
           "children": [
-            { "id": 14205, "label": "SUPPLIER WISE SALE REPORT", "type": "tab", "sortOrder": 1, "children": [] }
+            { "id": 14205, "label": "SUPPLIER WISE SALE REPORT", "type": "tab", "sortOrder": 1, "children": [] },
+            { "id": 14231, "label": "PURCHASE REPORT", "type": "tab", "sortOrder": 2, "children": [] },
+            { "id": 14232, "label": "SUPPLIER LEDGER", "type": "tab", "sortOrder": 3, "children": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 14207,
+      "label": "Unified Purchase",
+      "type": "module",
+      "sortOrder": 18,
+      "children": [
+        {
+          "id": 14208,
+          "label": "Purchase Orders",
+          "type": "submodule",
+          "sortOrder": 1,
+          "children": [
+            { "id": 14209, "label": "Create PO", "type": "tab", "sortOrder": 1, "children": [] },
+            { "id": 14210, "label": "PO List", "type": "tab", "sortOrder": 2, "children": [] },
+            { "id": 14211, "label": "PO Approval", "type": "tab", "sortOrder": 3, "children": [] }
+          ]
+        },
+        {
+          "id": 14212,
+          "label": "Goods Receipt",
+          "type": "submodule",
+          "sortOrder": 2,
+          "children": [
+            { "id": 14213, "label": "Create GRN", "type": "tab", "sortOrder": 1, "children": [] },
+            { "id": 14214, "label": "GRN List", "type": "tab", "sortOrder": 2, "children": [] },
+            { "id": 14215, "label": "QA Approval", "type": "tab", "sortOrder": 3, "children": [] }
+          ]
+        },
+        {
+          "id": 14216,
+          "label": "Stock Ledger",
+          "type": "submodule",
+          "sortOrder": 3,
+          "children": [
+            { "id": 14217, "label": "Stock Movements", "type": "tab", "sortOrder": 1, "children": [] },
+            { "id": 14218, "label": "Stock Balance", "type": "tab", "sortOrder": 2, "children": [] }
+          ]
+        },
+        {
+          "id": 14219,
+          "label": "Purchase Returns",
+          "type": "submodule",
+          "sortOrder": 4,
+          "children": [
+            { "id": 14220, "label": "Create Return", "type": "tab", "sortOrder": 1, "children": [] },
+            { "id": 14221, "label": "Return List", "type": "tab", "sortOrder": 2, "children": [] },
+            { "id": 14222, "label": "Debit Notes", "type": "tab", "sortOrder": 3, "children": [] }
+          ]
+        },
+        {
+          "id": 14223,
+          "label": "Landed Cost",
+          "type": "submodule",
+          "sortOrder": 5,
+          "children": [
+            { "id": 14224, "label": "Add Cost", "type": "tab", "sortOrder": 1, "children": [] },
+            { "id": 14225, "label": "Cost History", "type": "tab", "sortOrder": 2, "children": [] }
+          ]
+        },
+        {
+          "id": 14226,
+          "label": "Purchase Reports",
+          "type": "submodule",
+          "sortOrder": 6,
+          "children": [
+            { "id": 14227, "label": "Purchase Summary", "type": "tab", "sortOrder": 1, "children": [] },
+            { "id": 14228, "label": "Supplier Performance", "type": "tab", "sortOrder": 2, "children": [] },
+            { "id": 14229, "label": "Purchase vs Sales", "type": "tab", "sortOrder": 3, "children": [] }
           ]
         }
       ]

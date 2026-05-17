@@ -46,12 +46,15 @@ export class AccessKeysService {
       expiresInSeconds = Math.floor((expirationDate.getTime() - Date.now()) / 1000);
     }
 
+    const extractedIds = this.extractModuleIds(generateDto.modules || []);
+
     const payload = {
       jti: uuid(),
       clientId: client.id,
       companyName: client.companyName,
       email: client.email,
-      modules: generateDto.modules || [],
+      allowedModuleIds: extractedIds.join(','),
+      modules: extractedIds,
       expirationDate: expirationDate,
       createdAt: new Date().toISOString(),
     };
@@ -188,5 +191,32 @@ export class AccessKeysService {
 
   async countByClientId(clientId: string): Promise<number> {
     return this.accessKeysRepository.count({ where: { clientId } });
+  }
+
+  private extractModuleIds(modules: any[]): number[] {
+    const ids: number[] = [];
+    const traverse = (nodes: any[]) => {
+      if (!nodes || !Array.isArray(nodes)) return;
+      for (const node of nodes) {
+        if (node && typeof node === 'object' && 'id' in node) {
+          const idVal = Number(node.id);
+          if (!isNaN(idVal)) {
+            ids.push(idVal);
+          }
+        } else if (typeof node === 'number') {
+          ids.push(node);
+        } else if (typeof node === 'string') {
+          const idVal = Number(node);
+          if (!isNaN(idVal)) {
+            ids.push(idVal);
+          }
+        }
+        if (node && typeof node === 'object' && node.children) {
+          traverse(node.children);
+        }
+      }
+    };
+    traverse(modules);
+    return Array.from(new Set(ids)).sort((a, b) => a - b);
   }
 }
