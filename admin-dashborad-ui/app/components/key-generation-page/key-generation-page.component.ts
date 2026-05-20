@@ -42,10 +42,10 @@ export class KeyGenerationPageComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       });
 
-    this.dataService.getActiveClients()
+    this.dataService.generatedKeys$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(activeKeys => {
-        this.generatedKeys = activeKeys;
+      .subscribe(keys => {
+        this.generatedKeys = keys;
         this.cdr.markForCheck();
       });
   }

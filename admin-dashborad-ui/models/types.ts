@@ -12,6 +12,7 @@ export interface Client {
 }
 
 export interface GeneratedKey {
+  id?: string;
   clientId: string;
   clientName: string;
   plan: string;

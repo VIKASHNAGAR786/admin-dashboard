@@ -44,7 +44,27 @@ export class DataService {
   loadGeneratedKeys(): void {
     this.getAllGeneratedKeys().subscribe(
       (response: any) => {
-        const keys = response.data || response || [];
+        const rawKeys = response.data || response || [];
+        const keys = rawKeys.map((k: any) => ({
+          id: k.id,
+          key: k.key,
+          clientId: k.clientId,
+          clientName: k.client?.companyName || 'Unknown Client',
+          email: k.client?.email || '',
+          contactNumber: k.client?.contactNumber || '',
+          contactPerson: k.client?.contactPerson || '',
+          address: k.client?.address || '',
+          plan: k.modules,
+          expirationDate: k.expirationDate,
+          daysRemaining: k.expirationDate ? Math.ceil((new Date(k.expirationDate).getTime() - Date.now()) / 86400000) : 0,
+          status: k.status,
+          modules: k.modules,
+          deviceId: k.deviceId,
+          usageCount: k.usageCount,
+          lastIp: k.lastIp,
+          createdAt: k.createdAt,
+          updatedAt: k.updatedAt
+        }));
         this.generatedKeysSubject.next(keys);
       },
       (error) => {
@@ -56,12 +76,14 @@ export class DataService {
   }
 
   /**
-   * Get all clients with pagination
+   * Get all clients with pagination and search
    */
-  getAllClients(page: number = 1, limit: number = 100): Observable<any> {
-    return this.http.get(`${this.apiUrl}/clients`, {
-      params: { page: page.toString(), limit: limit.toString() }
-    }).pipe(
+  getAllClients(page: number = 1, limit: number = 100, search?: string): Observable<any> {
+    const params: any = { page: page.toString(), limit: limit.toString() };
+    if (search) {
+      params.search = search;
+    }
+    return this.http.get(`${this.apiUrl}/clients`, { params }).pipe(
       catchError((error) => {
         console.error('Error fetching clients:', error);
         return of({ data: [], total: 0 });
@@ -297,6 +319,18 @@ export class DataService {
     return this.http.patch(`${this.apiUrl}/access-keys/deactivate/${id}`, {}).pipe(
       catchError((error) => {
         console.error('Error deactivating key:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Renew an existing access key with a new expiration date and optional updated modules
+   */
+  renewKey(id: string, newExpirationDate: string, modules?: any[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/access-keys/${id}/renew`, { newExpirationDate, modules }).pipe(
+      catchError((error) => {
+        console.error('Error renewing key:', error);
         throw error;
       })
     );

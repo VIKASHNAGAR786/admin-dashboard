@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { GeneratedKey, Client } from '../../../models/types';
 import { format, parseISO } from 'date-fns';
 import { AlertService } from '../../../services/alert.service';
+import { DataService } from '../../../services/data.service';
 
 export interface ModuleNode {
   id: number;
@@ -579,7 +580,177 @@ export class KeyGeneratorComponent {
   selectedModules: any[] = [];
   selectedKeyDetails: any = null;
 
-  constructor(private alertService: AlertService) { }
+  // New Features for Refined UX
+  clientSearchQuery: string = '';
+  editingKeyId: string | null = null;
+  isEditing: boolean = false;
+
+  constructor(
+    private alertService: AlertService,
+    private dataService: DataService
+  ) { }
+
+  applyPreset(presetName: string): void {
+    // Clear first
+    this.cascadeSelection({ children: this.moduleHierarchy } as any, false);
+
+    let targetIds: number[] = [];
+
+    // Core module IDs that are general and usually included in every preset
+    const coreIds = [
+      14096, 14097, 14098, // Dashboard, Main Dashboard, Overview
+      14171, 14172, 14173, 14174, 14175, 14203, 14206, // System Setting & tabs
+      14164, 14165, 14166, 14167, 14168, 14169, 14170, // System & Accounts & tabs
+      14157, 14158, 14159, 14160, 14161, 14162, 14163, 14230, // Contacts & tabs
+      14193, 14194, 14195, 14196, 14197, 14204, 14205, 14231, 14232, // Reports & tabs
+      14188, 14189, 14190, 14191, 14192 // Barcode Designer & tabs
+    ];
+
+    switch (presetName) {
+      case 'pharmacy':
+        targetIds = [
+          ...coreIds,
+          14176, 14177, 14178, 14179, 14202, 14180, 14181, 14198, 14199, 14200, 14201, // Pharmacy modules
+          14099, 14100, 14101, 14102, // Unified Sales
+          14207, 14208, 14209, 14210, 14211, 14212, 14213, 14214, 14215, 14216, 14217, 14218, 14219, 14220, 14221, 14222, 14223, 14224, 14225, 14226, 14227, 14228, 14229 // Unified Purchase
+        ];
+        break;
+      case 'optical':
+        targetIds = [
+          ...coreIds,
+          14127, 14128, 14129, 14130, 14131, 14132, // Optical modules
+          14099, 14100, 14101, 14102 // Unified Sales
+        ];
+        break;
+      case 'supermarket':
+        targetIds = [
+          ...coreIds,
+          14133, 14134, 14135, 14136, 14137, 14138, // Supermarket
+          14099, 14100, 14101, 14102, // Unified Sales
+          14207, 14208, 14209, 14210, 14211, 14212, 14213, 14214, 14215, 14216, 14217, 14218, 14219, 14220, 14221, 14222, 14223, 14224, 14225, 14226, 14227, 14228, 14229 // Unified Purchase
+        ];
+        break;
+      case 'autoparts':
+        targetIds = [
+          ...coreIds,
+          14115, 14116, 14117, 14118, 14119, 14120, // Auto Parts
+          14099, 14100, 14101, 14102, // Unified Sales
+          14207, 14208, 14209, 14210, 14211, 14212, 14213, 14214, 14215, 14216, 14217, 14218, 14219, 14220, 14221, 14222, 14223, 14224, 14225, 14226, 14227, 14228, 14229 // Unified Purchase
+        ];
+        break;
+      case 'all':
+        this.cascadeSelection({ children: this.moduleHierarchy } as any, true);
+        this.updateParentSelectionStates(this.moduleHierarchy);
+        this.alertService.success('Selected all modules!');
+        return;
+      case 'clear':
+        this.cascadeSelection({ children: this.moduleHierarchy } as any, false);
+        this.updateParentSelectionStates(this.moduleHierarchy);
+        this.alertService.success('Cleared all selections!');
+        return;
+    }
+
+    this.selectNodesByIds(this.moduleHierarchy, targetIds);
+    this.updateParentSelectionStates(this.moduleHierarchy);
+    this.alertService.success(`Applied ${presetName} preset!`);
+  }
+
+  private selectNodesByIds(nodes: ModuleNode[], ids: number[]): void {
+    nodes.forEach(node => {
+      if (ids.includes(node.id)) {
+        node.selected = true;
+      }
+      if (node.children && node.children.length > 0) {
+        this.selectNodesByIds(node.children, ids);
+      }
+    });
+  }
+
+  applyDatePreset(days: number): void {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + days);
+    this.expirationDate = targetDate.toISOString().split('T')[0];
+  }
+
+  applyLifetimePreset(): void {
+    const targetDate = new Date();
+    targetDate.setFullYear(targetDate.getFullYear() + 5); // 5 Years validity
+    this.expirationDate = targetDate.toISOString().split('T')[0];
+  }
+
+  getFilteredClients(): Client[] {
+    if (!this.clientSearchQuery) {
+      return this.clients;
+    }
+    const query = this.clientSearchQuery.toLowerCase();
+    return this.clients.filter(c => 
+      c.companyName.toLowerCase().includes(query) || 
+      c.email.toLowerCase().includes(query) ||
+      c.contactPerson.toLowerCase().includes(query)
+    );
+  }
+
+  handleQuickRenew(keyData: GeneratedKey, event: Event): void {
+    event.stopPropagation();
+    if (!keyData.id) {
+      this.alertService.error('Cannot renew: key record ID is missing');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to renew the key for ${keyData.clientName} by 1 year? This will revoke the current active key.`)) {
+      return;
+    }
+
+    const oneYearLater = new Date();
+    oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+    const dateString = oneYearLater.toISOString().split('T')[0];
+
+    this.dataService.renewKey(keyData.id, dateString).subscribe({
+      next: (res) => {
+        this.alertService.success('Key renewed successfully for 1 year!');
+        this.dataService.loadGeneratedKeys();
+      },
+      error: (err) => {
+        this.alertService.error(err.error?.message || 'Failed to renew key');
+      }
+    });
+  }
+
+  handleCloneAndEdit(keyData: GeneratedKey, event: Event): void {
+    event.stopPropagation();
+    this.selectedClientId = keyData.clientId;
+    this.plan = keyData.plan;
+    this.expirationDate = keyData.expirationDate ? keyData.expirationDate.split('T')[0] : '';
+    this.editingKeyId = keyData.id || null;
+    this.isEditing = true;
+
+    if (keyData.modules) {
+      this.loadModulesFromKey(keyData.modules);
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.alertService.success(`Loaded configuration for ${keyData.clientName}. Modify modules/date and click 'Update Key'`);
+  }
+
+  cancelEdit(): void {
+    this.resetForm();
+  }
+
+  loadModulesFromKey(modules: any[]): void {
+    const ids: number[] = [];
+    const collectIds = (nodes: any[]) => {
+      if (!nodes) return;
+      nodes.forEach(node => {
+        if (node.id) ids.push(node.id);
+        if (node.children) collectIds(node.children);
+      });
+    };
+    collectIds(modules);
+
+    this.cascadeSelection({ children: this.moduleHierarchy } as any, false);
+    this.selectNodesByIds(this.moduleHierarchy, ids);
+    this.updateParentSelectionStates(this.moduleHierarchy);
+  }
 
   toggleNodeExpand(node: ModuleNode): void {
     node.expanded = !node.expanded;
@@ -674,6 +845,20 @@ export class KeyGeneratorComponent {
       return;
     }
 
+    if (this.isEditing && this.editingKeyId) {
+      this.dataService.renewKey(this.editingKeyId, this.expirationDate, selectedModules).subscribe({
+        next: (res: any) => {
+          this.alertService.success('Access key updated and renewed successfully!');
+          this.dataService.loadGeneratedKeys(); // Reload key list
+          this.resetForm();
+        },
+        error: (err) => {
+          this.alertService.error(err.error?.message || 'Failed to update access key');
+        }
+      });
+      return;
+    }
+
     // Create the structured payload that the ERP system expects
     const payload = {
       ClientId: this.selectedClientId,
@@ -714,6 +899,9 @@ export class KeyGeneratorComponent {
     this.plan = '';
     this.expirationDate = '';
     this.moduleHierarchy = JSON.parse(JSON.stringify(MODULE_HIERARCHY)); // Reset hierarchy clone
+    this.editingKeyId = null;
+    this.isEditing = false;
+    this.clientSearchQuery = '';
   }
 
   handleCopyKey(key: string): void {

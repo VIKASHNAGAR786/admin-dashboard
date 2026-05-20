@@ -98,4 +98,20 @@ export class AccessKeysController {
       throw new InternalServerErrorException('Failed to deactivate access key');
     }
   }
+
+  @Post(':id/renew')
+  async renew(
+    @Param('id') id: string,
+    @Body('newExpirationDate') newExpirationDate: string,
+    @Body('modules') modules?: any[],
+  ) {
+    try {
+      if (!newExpirationDate) {
+        throw new BadRequestException('newExpirationDate is required');
+      }
+      return await this.accessKeysService.renew(id, newExpirationDate, modules);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message || 'Failed to renew access key');
+    }
+  }
 }

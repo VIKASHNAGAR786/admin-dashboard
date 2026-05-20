@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, Repository, Like } from 'typeorm';
 import { Client } from './entities/client.entity';
 import { CreateClientDto, UpdateClientDto } from './dto/client.dto';
 import { AccessKeysService } from '@/access-keys/access-keys.service';
@@ -23,9 +23,20 @@ export class ClientsService {
     return this.clientsRepository.save(client);
   }
 
-  async findAll(page: number = 1, limit: number = 10) {
+  async findAll(page: number = 1, limit: number = 10, search?: string) {
     const skip = (page - 1) * limit;
+    
+    let where: any = {};
+    if (search) {
+      where = [
+        { companyName: Like(`%${search}%`) },
+        { email: Like(`%${search}%`) },
+        { contactPerson: Like(`%${search}%`) },
+      ];
+    }
+
     const [clients, total] = await this.clientsRepository.findAndCount({
+      where,
       skip,
       take: limit,
       order: { createdAt: 'DESC' },

@@ -14,8 +14,12 @@ export class ClientsController {
   }
 
   @Get()
-  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
-    return this.clientsService.findAll(page, limit);
+  findAll(
+    @Query('page') page: number = 1, 
+    @Query('limit') limit: number = 10,
+    @Query('search') search?: string
+  ) {
+    return this.clientsService.findAll(page, limit, search);
   }
 
   @Get('stats')

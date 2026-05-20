@@ -48,8 +48,28 @@
     </div>
 
     <!-- Premium Form Content -->
+    <!-- Edit Mode Indicator Banner -->
+    <div *ngIf="isEditing" class="px-8 py-3 bg-amber-50 border-b border-amber-100 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+        </span>
+        <span class="text-xs font-bold text-amber-800">
+          ⚠️ Editing & Renewing Key for <span class="font-extrabold">{{ getSelectedClient()?.companyName }}</span>
+        </span>
+      </div>
+      <button 
+        type="button"
+        (click)="cancelEdit()" 
+        class="text-xs font-bold text-amber-600 hover:text-amber-800 transition-colors"
+      >
+        Cancel Edit
+      </button>
+    </div>
+
     <div class="px-8 py-8 space-y-6 bg-gradient-to-br from-white to-indigo-50/30">
-      <!-- Client Selection with Enhanced Style -->
+      <!-- Client Selection with Enhanced Style and Search -->
       <div class="space-y-3">
         <label
           for="client"
@@ -58,34 +78,45 @@
           <span class="w-2 h-2 bg-indigo-600 rounded-full"></span>
           Select Client*
         </label>
-        <div class="relative">
-          <select
-            id="client"
-            [(ngModel)]="selectedClientId"
-            class="w-full px-5 py-4 bg-white border-2 border-gray-300 rounded-xl focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none transition-all duration-300 font-semibold text-gray-700 appearance-none cursor-pointer hover:border-indigo-400 shadow-sm"
-          >
-            <option value="">-- Choose a client --</option>
-            <option
-              *ngFor="let client of clients"
-              value="{{ client.id }}"
+        <div class="relative space-y-2">
+          <!-- Autocomplete client search input -->
+          <input
+            type="text"
+            [(ngModel)]="clientSearchQuery"
+            placeholder="🔍 Search client by company, email, contact..."
+            [disabled]="isEditing"
+            class="w-full px-5 py-3.5 bg-indigo-50/50 border-2 border-indigo-100 rounded-xl focus:border-indigo-600 outline-none transition-all duration-300 font-semibold text-gray-700 placeholder-indigo-400/80 shadow-inner"
+          />
+          <div class="relative">
+            <select
+              id="client"
+              [(ngModel)]="selectedClientId"
+              [disabled]="isEditing"
+              class="w-full px-5 py-4 bg-white border-2 border-gray-300 rounded-xl focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none transition-all duration-300 font-semibold text-gray-700 appearance-none cursor-pointer hover:border-indigo-400 shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
             >
-              {{ client.companyName }} ({{ client.email }})
-            </option>
-          </select>
-          <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg
-              class="w-5 h-5 text-indigo-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.5"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
+              <option value="">-- Choose a client --</option>
+              <option
+                *ngFor="let client of getFilteredClients()"
+                value="{{ client.id }}"
+              >
+                {{ client.companyName }} ({{ client.email }})
+              </option>
+            </select>
+            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg
+                class="w-5 h-5 text-indigo-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -135,7 +166,7 @@
           <span class="w-2 h-2 bg-pink-600 rounded-full"></span>
           Expiration Date
         </label>
-        <div class="relative">
+        <div class="relative space-y-2">
           <input
             id="expiration"
             type="date"
@@ -143,6 +174,37 @@
             [min]="getTodayDate()"
             class="w-full px-5 py-4 bg-white border-2 border-gray-300 rounded-xl focus:border-pink-600 focus:ring-4 focus:ring-pink-100 outline-none transition-all duration-300 font-semibold text-gray-700 hover:border-pink-400 shadow-sm"
           />
+          <!-- Quick expiration date presets -->
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <button
+              type="button"
+              (click)="applyDatePreset(30)"
+              class="px-3 py-1.5 text-xs font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-all border border-pink-200/50 shadow-sm"
+            >
+              🗓️ 30 Days
+            </button>
+            <button
+              type="button"
+              (click)="applyDatePreset(90)"
+              class="px-3 py-1.5 text-xs font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-all border border-pink-200/50 shadow-sm"
+            >
+              🗓️ 90 Days
+            </button>
+            <button
+              type="button"
+              (click)="applyDatePreset(365)"
+              class="px-3 py-1.5 text-xs font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-all border border-pink-200/50 shadow-sm"
+            >
+              📅 1 Year
+            </button>
+            <button
+              type="button"
+              (click)="applyLifetimePreset()"
+              class="px-3 py-1.5 text-xs font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-all border border-pink-200/50 shadow-sm"
+            >
+              🛡️ 5 Years (Lifetime)
+            </button>
+          </div>
         </div>
       </div>
 
@@ -152,6 +214,54 @@
           <span class="w-2 h-2 bg-indigo-600 rounded-full"></span>
           Select Access Areas
         </label>
+
+        <!-- Quick Module Presets Actions -->
+        <div class="flex flex-wrap gap-1.5 p-3 bg-indigo-50/50 rounded-xl border border-indigo-100/50">
+          <span class="text-[10px] font-black text-indigo-400 uppercase tracking-wider block w-full mb-1">Module Presets</span>
+          <button
+            type="button"
+            (click)="applyPreset('pharmacy')"
+            class="px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-100 rounded-lg transition-all border border-indigo-200 shadow-sm"
+          >
+            💊 Pharmacy
+          </button>
+          <button
+            type="button"
+            (click)="applyPreset('optical')"
+            class="px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-100 rounded-lg transition-all border border-indigo-200 shadow-sm"
+          >
+            👓 Optical
+          </button>
+          <button
+            type="button"
+            (click)="applyPreset('supermarket')"
+            class="px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-100 rounded-lg transition-all border border-indigo-200 shadow-sm"
+          >
+            🛒 Supermarket
+          </button>
+          <button
+            type="button"
+            (click)="applyPreset('autoparts')"
+            class="px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-100 rounded-lg transition-all border border-indigo-200 shadow-sm"
+          >
+            ⚙️ Auto Parts
+          </button>
+          <button
+            type="button"
+            (click)="applyPreset('all')"
+            class="px-2.5 py-1.5 text-xs font-bold text-emerald-700 bg-white hover:bg-emerald-100 rounded-lg transition-all border border-emerald-200 shadow-sm"
+          >
+            ✅ Select All
+          </button>
+          <button
+            type="button"
+            (click)="applyPreset('clear')"
+            class="px-2.5 py-1.5 text-xs font-bold text-rose-700 bg-white hover:bg-rose-100 rounded-lg transition-all border border-rose-200 shadow-sm"
+          >
+            ❌ Clear All
+          </button>
+        </div>
+
         <div
           class="p-4 bg-gradient-to-br from-white to-gray-50 rounded-xl border-2 border-gray-200 shadow-inner max-h-[400px] overflow-y-auto"
         >
@@ -318,7 +428,7 @@
           >
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
           </svg>
-          <span class="text-lg tracking-wide">GENERATE SECURE KEY</span>
+          <span class="text-lg tracking-wide">{{ isEditing ? 'UPDATE & RENEW KEY' : 'GENERATE SECURE KEY' }}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300"
@@ -619,6 +729,30 @@
                 <span class="text-gray-900 font-medium text-xs break-words">{{ keyData.address }}</span>
               </div>
             </div>
+          </div>
+
+          <!-- Renewal and Edit Actions -->
+          <div class="flex items-center gap-2 pt-2">
+            <button
+              (click)="handleQuickRenew(keyData, $event)"
+              class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black rounded-lg transition-all shadow-sm hover:shadow-md cursor-pointer"
+              title="Quickly extend expiration date by 1 year"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+              <span>Quick Renew (+1 Yr)</span>
+            </button>
+            <button
+              (click)="handleCloneAndEdit(keyData, $event)"
+              class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-black rounded-lg transition-all shadow-sm hover:shadow-md cursor-pointer"
+              title="Populate generator to modify modules or date"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"/>
+              </svg>
+              <span>Edit & Renew</span>
+            </button>
           </div>
 
           <!-- Dates Footer -->

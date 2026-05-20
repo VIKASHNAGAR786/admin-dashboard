@@ -175,6 +175,54 @@ export class AccessKeysService {
     this.syncToGoogleSheets(key, 'DEACTIVATED', key.client).catch(() => {});
   }
 
+  async renew(id: string, newExpirationDate: string, newModules?: any[]): Promise<AccessKey> {
+    const oldKey = await this.findOne(id);
+    if (!oldKey) throw new Error('Original access key not found');
+
+    // Revoke the old key first
+    await this.revoke(id);
+
+    // Generate a new key with same client and modules, but new expiration date
+    const client = await this.clientsRepository.findOne({ where: { id: oldKey.clientId } });
+    if (!client) throw new Error('Client not found');
+
+    let expirationDate: Date | null = null;
+    let expiresInSeconds: number | undefined = undefined;
+    if (newExpirationDate) {
+      expirationDate = new Date(newExpirationDate);
+      expiresInSeconds = Math.floor((expirationDate.getTime() - Date.now()) / 1000);
+    }
+
+    const modulesToUse = newModules || oldKey.modules || [];
+    const extractedIds = this.extractModuleIds(modulesToUse);
+
+    const payload = {
+      jti: uuid(),
+      clientId: client.id,
+      companyName: client.companyName,
+      email: client.email,
+      allowedModuleIds: extractedIds.join(','),
+      modules: extractedIds,
+      expirationDate: expirationDate,
+      createdAt: new Date().toISOString(),
+    };
+
+    const key = this.jwtService.sign(payload, expiresInSeconds && expiresInSeconds > 0 ? { expiresIn: expiresInSeconds } : {});
+
+    const accessKey = this.accessKeysRepository.create({
+      key,
+      clientId: oldKey.clientId,
+      modules: modulesToUse,
+      expirationDate,
+      status: 'active',
+    });
+
+    const savedKey = await this.accessKeysRepository.save(accessKey);
+    this.syncToGoogleSheets(savedKey, 'CREATE', client).catch(() => {});
+
+    return savedKey;
+  }
+
   async getByClientId(clientId: string) {
     return this.accessKeysRepository.find({
       where: { clientId },
