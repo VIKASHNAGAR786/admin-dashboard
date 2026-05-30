@@ -567,23 +567,60 @@ const MODULE_HIERARCHY: ModuleNode[] =
   styleUrls: ['./key-generator.component.css']
 })
 export class KeyGeneratorComponent {
-  @Input() generatedKeys: GeneratedKey[] = [];
   @Input() clients: Client[] = [];
+  @Input() set keyToEdit(keyData: GeneratedKey | null) {
+    if (keyData) {
+      this.selectedClientId = keyData.clientId;
+      this.plan = keyData.plan;
+      this.expirationDate = keyData.expirationDate ? keyData.expirationDate.split('T')[0] : '';
+      this.editingKeyId = keyData.id || null;
+      this.isEditing = true;
+      this.clientSearchQuery = '';
+      if (keyData.modules) {
+        this.loadModulesFromKey(keyData.modules);
+      }
+    } else {
+      // Avoid clearing if we are already in initial state
+      if (this.selectedClientId || this.plan || this.expirationDate || this.isEditing) {
+        this.resetForm();
+      }
+    }
+  }
   @Output() onGenerateKey = new EventEmitter<Omit<GeneratedKey, 'id' | 'generatedAt'>>();
+  @Output() onCancelEdit = new EventEmitter<void>();
 
   moduleHierarchy: ModuleNode[] = JSON.parse(JSON.stringify(MODULE_HIERARCHY)); // Deep clone so multiple renders don't conflict
 
   selectedClientId: string = '';
   plan: string = '';
   expirationDate: string = '';
-  copiedKey: string | null = null;
   selectedModules: any[] = [];
-  selectedKeyDetails: any = null;
 
   // New Features for Refined UX
   clientSearchQuery: string = '';
   editingKeyId: string | null = null;
   isEditing: boolean = false;
+
+  // Accordion Group Expansion States
+  expandedCoreGroup: boolean = true;
+  expandedTransactionsGroup: boolean = false;
+  expandedIndustriesGroup: boolean = false;
+
+  isCoreModule(nodeId: number): boolean {
+    return [14096, 14157, 14164, 14171, 14188, 14193].includes(nodeId);
+  }
+
+  isTransactionModule(nodeId: number): boolean {
+    return [14099, 14207].includes(nodeId);
+  }
+
+  isIndustryModule(nodeId: number): boolean {
+    return [14103, 14109, 14115, 14121, 14127, 14176, 14182, 14133, 14139, 14145, 14151].includes(nodeId);
+  }
+
+  getSelectedModulesCount(): number {
+    return this.buildSelectedTree(this.moduleHierarchy).length;
+  }
 
   constructor(
     private alertService: AlertService,
@@ -690,50 +727,9 @@ export class KeyGeneratorComponent {
     );
   }
 
-  handleQuickRenew(keyData: GeneratedKey, event: Event): void {
-    event.stopPropagation();
-    if (!keyData.id) {
-      this.alertService.error('Cannot renew: key record ID is missing');
-      return;
-    }
-
-    if (!confirm(`Are you sure you want to renew the key for ${keyData.clientName} by 1 year? This will revoke the current active key.`)) {
-      return;
-    }
-
-    const oneYearLater = new Date();
-    oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
-    const dateString = oneYearLater.toISOString().split('T')[0];
-
-    this.dataService.renewKey(keyData.id, dateString).subscribe({
-      next: (res) => {
-        this.alertService.success('Key renewed successfully for 1 year!');
-        this.dataService.loadGeneratedKeys();
-      },
-      error: (err) => {
-        this.alertService.error(err.error?.message || 'Failed to renew key');
-      }
-    });
-  }
-
-  handleCloneAndEdit(keyData: GeneratedKey, event: Event): void {
-    event.stopPropagation();
-    this.selectedClientId = keyData.clientId;
-    this.plan = keyData.plan;
-    this.expirationDate = keyData.expirationDate ? keyData.expirationDate.split('T')[0] : '';
-    this.editingKeyId = keyData.id || null;
-    this.isEditing = true;
-
-    if (keyData.modules) {
-      this.loadModulesFromKey(keyData.modules);
-    }
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.alertService.success(`Loaded configuration for ${keyData.clientName}. Modify modules/date and click 'Update Key'`);
-  }
-
   cancelEdit(): void {
     this.resetForm();
+    this.onCancelEdit.emit();
   }
 
   loadModulesFromKey(modules: any[]): void {
@@ -851,6 +847,7 @@ export class KeyGeneratorComponent {
           this.alertService.success('Access key updated and renewed successfully!');
           this.dataService.loadGeneratedKeys(); // Reload key list
           this.resetForm();
+          this.onCancelEdit.emit();
         },
         error: (err) => {
           this.alertService.error(err.error?.message || 'Failed to update access key');
@@ -904,114 +901,12 @@ export class KeyGeneratorComponent {
     this.clientSearchQuery = '';
   }
 
-  handleCopyKey(key: string): void {
-    navigator.clipboard.writeText(key).then(() => {
-      this.copiedKey = key;
-      setTimeout(() => (this.copiedKey = null), 2000);
-    });
-  }
-
-  viewKeyDetails(key: string): void {
-    if (this.selectedKeyDetails && this.selectedKeyDetails.rawKey === key) {
-      this.selectedKeyDetails = null;
-      return;
-    }
-
-    try {
-      // Decode Base64 JSON payload
-      const payload = JSON.parse(atob(key));
-      this.selectedKeyDetails = { ...payload, rawKey: key };
-      this.alertService.success('Key decrypted successfully!');
-    } catch (e) {
-      console.error('Decryption failed:', e);
-      this.alertService.error('This key is not in a decodable format');
-    }
-  }
-
   formatDate(dateString: string): string {
     try {
       return format(parseISO(dateString), 'MMM dd, yyyy');
     } catch {
       return dateString;
     }
-  }
-
-  formatDateTime(dateString: string): string {
-    try {
-      return format(parseISO(dateString), 'MMM dd, yyyy HH:mm');
-    } catch {
-      return dateString;
-    }
-  }
-
-  formatTimeAgo(dateString: string): string {
-    try {
-      const date = parseISO(dateString);
-      const now = new Date();
-      const diffInMs = now.getTime() - date.getTime();
-      const diffInMinutes = Math.floor(diffInMs / 60000);
-
-      if (diffInMinutes < 1) return 'just now';
-      if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-      const diffInHours = Math.floor(diffInMinutes / 60);
-      if (diffInHours < 24) return `${diffInHours}h ago`;
-      const diffInDays = Math.floor(diffInHours / 24);
-      if (diffInDays < 7) return `${diffInDays}d ago`;
-
-      return format(date, 'MMM dd');
-    } catch {
-      return dateString;
-    }
-  }
-
-  getRemainingDays(expirationDate: string): number {
-    try {
-      const expDate = parseISO(expirationDate);
-      const today = new Date();
-      const diffTime = expDate.getTime() - today.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays;
-    } catch {
-      return 0;
-    }
-  }
-
-  getExpirationStatus(expirationDate: string): 'expired' | 'expiring-soon' | 'active' {
-    const days = this.getRemainingDays(expirationDate);
-    if (days < 0) return 'expired';
-    if (days <= 30) return 'expiring-soon';
-    return 'active';
-  }
-
-  getExpirationStatusClass(expirationDate: string): string {
-    const status = this.getExpirationStatus(expirationDate);
-    if (status === 'expired') return 'text-red-600 font-bold';
-    if (status === 'expiring-soon') return 'text-amber-600 font-bold';
-    return 'text-green-600 font-bold';
-  }
-
-  getExpirationText(expirationDate: string): string {
-    const days = this.getRemainingDays(expirationDate);
-    if (days < 0) return 'Expired';
-    if (days === 0) return 'Expires Today';
-    if (days === 1) return 'Expires Tomorrow';
-    return `${days} days remaining`;
-  }
-
-  getPlanName(plan: any): string {
-    if (typeof plan === 'string') return plan;
-    if (Array.isArray(plan)) {
-      if (plan.length === 0) return 'No Modules';
-      const names = plan.map(p => p.label || p.name || 'Module');
-      if (names.length > 3) {
-        return names.slice(0, 3).join(', ') + ` +${names.length - 3} more`;
-      }
-      return names.join(', ');
-    }
-    if (plan && typeof plan === 'object') {
-      return plan.name || plan.label || 'Standard Plan';
-    }
-    return 'Basic';
   }
 }
 

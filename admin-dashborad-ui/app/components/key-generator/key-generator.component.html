@@ -1,794 +1,344 @@
-<div class="grid gap-8 lg:grid-cols-2">
-  <!-- Generate Form Card with Premium Design -->
-  <div
-    class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-indigo-100/50 animate-slideInDown hover:shadow-indigo-200/50 transition-all duration-500"
+<!-- Edit Mode Indicator Banner -->
+<div *ngIf="isEditing" class="px-8 py-3 bg-amber-500 text-white flex items-center justify-between shadow-inner rounded-t-3xl border-b border-amber-600 mb-2">
+  <div class="flex items-center gap-2">
+    <span class="flex h-2 w-2 relative">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+      <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+    </span>
+    <span class="text-xs font-bold uppercase tracking-wider">
+      ⚠️ Editing & Renewing Key for <span class="font-black underline">{{ getSelectedClient()?.companyName }}</span>
+    </span>
+  </div>
+  <button 
+    type="button"
+    (click)="cancelEdit()" 
+    class="px-2.5 py-1 bg-white/20 hover:bg-white/30 text-white text-[10px] font-black rounded border border-white/30 transition-colors uppercase tracking-wider cursor-pointer"
   >
-    <!-- Premium Card Header -->\n <div
-      class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 px-8 py-8 overflow-hidden"
-    >
-      <!-- Animated background elements -->
-      <div class="absolute inset-0 opacity-20">
-        <div
-          class="absolute top-0 right-0 w-40 h-40 bg-white rounded-full mix-blend-overlay filter blur-2xl animate-pulse"
-        ></div>
-        <div
-          class="absolute bottom-0 left-0 w-32 h-32 bg-pink-300 rounded-full mix-blend-overlay filter blur-2xl animate-pulse"
-          style="animation-delay: 0.5s"
-        ></div>
-      </div>
+    Cancel Edit
+  </button>
+</div>
 
-      <div class="relative z-10">
-        <div class="flex items-center gap-4 mb-3">
-          <div class="p-3 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/30 shadow-xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-7 w-7 text-white"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-            >
-              <rect
-                x="3"
-                y="11"
-                width="18"
-                height="11"
-                rx="2"
-                ry="2"
-              ></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-          </div>
-          <div>
-            <h3 class="text-2xl font-black text-white">Generate Access Key</h3>
-            <p class="text-sm text-indigo-100 mt-1 font-medium">Create secure API credentials</p>
-          </div>
-        </div>
-      </div>
+<!-- Content Canvas (Scrollable) -->
+<div class="flex-grow overflow-y-auto custom-scrollbar bg-white/80 backdrop-blur-[12px] rounded-3xl border border-white/40 shadow-2xl p-8 flex flex-col gap-10 h-full w-full min-h-0">
+  
+  <!-- SECTION 1: CLIENT & VALIDITY -->
+  <section class="space-y-6">
+    <div class="flex items-center gap-3">
+      <span class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm">1</span>
+      <h2 class="font-section-label text-section-label text-on-surface tracking-widest uppercase">CLIENT & VALIDITY PERIOD</h2>
     </div>
-
-    <!-- Premium Form Content -->
-    <!-- Edit Mode Indicator Banner -->
-    <div *ngIf="isEditing" class="px-8 py-3 bg-amber-50 border-b border-amber-100 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span class="flex h-2 w-2 relative">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-        </span>
-        <span class="text-xs font-bold text-amber-800">
-          ⚠️ Editing & Renewing Key for <span class="font-extrabold">{{ getSelectedClient()?.companyName }}</span>
-        </span>
-      </div>
-      <button 
-        type="button"
-        (click)="cancelEdit()" 
-        class="text-xs font-bold text-amber-600 hover:text-amber-800 transition-colors"
-      >
-        Cancel Edit
-      </button>
-    </div>
-
-    <div class="px-8 py-8 space-y-6 bg-gradient-to-br from-white to-indigo-50/30">
-      <!-- Client Selection with Enhanced Style and Search -->
-      <div class="space-y-3">
-        <label
-          for="client"
-          class="text-sm font-black text-gray-800 uppercase tracking-wider flex items-center gap-2"
-        >
-          <span class="w-2 h-2 bg-indigo-600 rounded-full"></span>
-          Select Client*
-        </label>
-        <div class="relative space-y-2">
-          <!-- Autocomplete client search input -->
-          <input
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Client Search & Dropdown Stack -->
+      <div class="space-y-4">
+        <label class="font-section-label text-[11px] text-on-surface-variant uppercase ml-1 block">CLIENT SEARCH</label>
+        
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/60">search</span>
+          <input 
             type="text"
             [(ngModel)]="clientSearchQuery"
-            placeholder="🔍 Search client by company, email, contact..."
             [disabled]="isEditing"
-            class="w-full px-5 py-3.5 bg-indigo-50/50 border-2 border-indigo-100 rounded-xl focus:border-indigo-600 outline-none transition-all duration-300 font-semibold text-gray-700 placeholder-indigo-400/80 shadow-inner"
+            class="w-full bg-white/50 border border-outline-variant rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-md" 
+            placeholder="Search client by company, email, contact..." 
           />
-          <div class="relative">
-            <select
-              id="client"
-              [(ngModel)]="selectedClientId"
-              [disabled]="isEditing"
-              class="w-full px-5 py-4 bg-white border-2 border-gray-300 rounded-xl focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none transition-all duration-300 font-semibold text-gray-700 appearance-none cursor-pointer hover:border-indigo-400 shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-            >
-              <option value="">-- Choose a client --</option>
-              <option
-                *ngFor="let client of getFilteredClients()"
-                value="{{ client.id }}"
-              >
-                {{ client.companyName }} ({{ client.email }})
-              </option>
-            </select>
-            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-              <svg
-                class="w-5 h-5 text-indigo-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2.5"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
-            </div>
-          </div>
         </div>
-      </div>
-
-      <!-- Plan Type with Premium Design -->
-      <div class="space-y-3">
-        <label
-          for="plan"
-          class="text-sm font-black text-gray-800 uppercase tracking-wider flex items-center gap-2"
-        >
-          <span class="w-2 h-2 bg-purple-600 rounded-full"></span>
-          Plan Type
-        </label>
+        
         <div class="relative">
-          <select
-            id="plan"
-            [(ngModel)]="plan"
-            class="w-full px-5 py-4 bg-white border-2 border-gray-300 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-100 outline-none transition-all duration-300 font-semibold text-gray-700 appearance-none cursor-pointer hover:border-purple-400 shadow-sm"
+          <select 
+            [(ngModel)]="selectedClientId"
+            [disabled]="isEditing"
+            class="w-full bg-white/50 border border-outline-variant rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none transition-all text-body-md shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
-            <option value="">Select a plan</option>
-            <option value="Basic">💎 Basic - $99/month</option>
-            <option value="Pro">🚀 Pro - $299/month</option>
-            <option value="Enterprise">⭐ Enterprise - Custom</option>
+            <option value="">-- Choose a client --</option>
+            <option
+              *ngFor="let client of getFilteredClients()"
+              [value]="client.id"
+            >
+              {{ client.companyName }} ({{ client.email }})
+            </option>
           </select>
-          <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-            <svg
-              class="w-5 h-5 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
+        </div>
+      </div>
+      
+      <!-- Plan & Expiration -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-4">
+          <label class="font-section-label text-[11px] text-on-surface-variant uppercase ml-1 block">PLAN TYPE</label>
+          <div class="relative">
+            <select 
+              [(ngModel)]="plan"
+              class="w-full bg-white/50 border border-outline-variant rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none transition-all text-body-md"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.5"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
+              <option value="">Select a plan</option>
+              <option value="Basic">Basic Tier</option>
+              <option value="Pro">Pro Tier</option>
+              <option value="Enterprise">Enterprise</option>
+            </select>
+            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
           </div>
         </div>
-      </div>
-      <div class="space-y-3">
-        <label
-          for="expiration"
-          class="text-sm font-black text-gray-800 uppercase tracking-wider flex items-center gap-2"
-        >
-          <span class="w-2 h-2 bg-pink-600 rounded-full"></span>
-          Expiration Date
-        </label>
-        <div class="relative space-y-2">
-          <input
-            id="expiration"
-            type="date"
-            [(ngModel)]="expirationDate"
-            [min]="getTodayDate()"
-            class="w-full px-5 py-4 bg-white border-2 border-gray-300 rounded-xl focus:border-pink-600 focus:ring-4 focus:ring-pink-100 outline-none transition-all duration-300 font-semibold text-gray-700 hover:border-pink-400 shadow-sm"
-          />
-          <!-- Quick expiration date presets -->
-          <div class="flex flex-wrap gap-1.5 pt-1">
-            <button
-              type="button"
-              (click)="applyDatePreset(30)"
-              class="px-3 py-1.5 text-xs font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-all border border-pink-200/50 shadow-sm"
-            >
-              🗓️ 30 Days
-            </button>
-            <button
-              type="button"
-              (click)="applyDatePreset(90)"
-              class="px-3 py-1.5 text-xs font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-all border border-pink-200/50 shadow-sm"
-            >
-              🗓️ 90 Days
-            </button>
-            <button
-              type="button"
-              (click)="applyDatePreset(365)"
-              class="px-3 py-1.5 text-xs font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-all border border-pink-200/50 shadow-sm"
-            >
-              📅 1 Year
-            </button>
-            <button
-              type="button"
-              (click)="applyLifetimePreset()"
-              class="px-3 py-1.5 text-xs font-bold text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-lg transition-all border border-pink-200/50 shadow-sm"
-            >
-              🛡️ 5 Years (Lifetime)
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modular Selection Tree -->
-      <div class="space-y-3">
-        <label class="text-sm font-black text-gray-800 uppercase tracking-wider flex items-center gap-2">
-          <span class="w-2 h-2 bg-indigo-600 rounded-full"></span>
-          Select Access Areas
-        </label>
-
-        <!-- Quick Module Presets Actions -->
-        <div class="flex flex-wrap gap-1.5 p-3 bg-indigo-50/50 rounded-xl border border-indigo-100/50">
-          <span class="text-[10px] font-black text-indigo-400 uppercase tracking-wider block w-full mb-1">Module Presets</span>
-          <button
-            type="button"
-            (click)="applyPreset('pharmacy')"
-            class="px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-100 rounded-lg transition-all border border-indigo-200 shadow-sm"
-          >
-            💊 Pharmacy
-          </button>
-          <button
-            type="button"
-            (click)="applyPreset('optical')"
-            class="px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-100 rounded-lg transition-all border border-indigo-200 shadow-sm"
-          >
-            👓 Optical
-          </button>
-          <button
-            type="button"
-            (click)="applyPreset('supermarket')"
-            class="px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-100 rounded-lg transition-all border border-indigo-200 shadow-sm"
-          >
-            🛒 Supermarket
-          </button>
-          <button
-            type="button"
-            (click)="applyPreset('autoparts')"
-            class="px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-white hover:bg-indigo-100 rounded-lg transition-all border border-indigo-200 shadow-sm"
-          >
-            ⚙️ Auto Parts
-          </button>
-          <button
-            type="button"
-            (click)="applyPreset('all')"
-            class="px-2.5 py-1.5 text-xs font-bold text-emerald-700 bg-white hover:bg-emerald-100 rounded-lg transition-all border border-emerald-200 shadow-sm"
-          >
-            ✅ Select All
-          </button>
-          <button
-            type="button"
-            (click)="applyPreset('clear')"
-            class="px-2.5 py-1.5 text-xs font-bold text-rose-700 bg-white hover:bg-rose-100 rounded-lg transition-all border border-rose-200 shadow-sm"
-          >
-            ❌ Clear All
-          </button>
-        </div>
-
-        <div
-          class="p-4 bg-gradient-to-br from-white to-gray-50 rounded-xl border-2 border-gray-200 shadow-inner max-h-[400px] overflow-y-auto"
-        >
-
-          <ng-template
-            #moduleNode
-            let-node="node"
-            let-level="level"
-          >
-            <div
-              class="flex flex-col mb-1 relative"
-              [ngClass]="{'ml-6': level > 0, 'mt-2': level === 0}"
-            >
-
-              <div
-                class="group flex items-center gap-3 p-2 bg-white rounded-lg hover:bg-indigo-50 transition-all duration-300 border border-transparent hover:border-indigo-200"
-              >
-                <button
-                  *ngIf="node.children && node.children.length > 0"
-                  (click)="toggleNodeExpand(node)"
-                  type="button"
-                  class="p-1 text-gray-400 hover:text-indigo-600 transition-colors rounded-md hover:bg-indigo-100 flex-shrink-0"
-                >
-                  <svg
-                    *ngIf="node.expanded"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <svg
-                    *ngIf="!node.expanded"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
-                <div
-                  *ngIf="!node.children || node.children.length === 0"
-                  class="w-6 hidden md:block"
-                ></div>
-
-                <input
-                  type="checkbox"
-                  [id]="'node-' + node.id"
-                  [(ngModel)]="node.selected"
-                  (ngModelChange)="onNodeSelectionChange(node)"
-                  [indeterminate]="node.indeterminate"
-                  class="w-5 h-5 cursor-pointer accent-indigo-600 rounded-md transition-all duration-200"
-                />
-
-                <label
-                  [for]="'node-' + node.id"
-                  class="text-sm cursor-pointer select-none font-bold text-gray-700 group-hover:text-indigo-700 transition-colors flex-1 flex items-center justify-between"
-                >
-                  <span>{{ node.label }}</span>
-                  <span
-                    *ngIf="node.type === 'module'"
-                    class="text-[10px] uppercase font-black tracking-widest text-indigo-400 bg-indigo-50 px-2 py-1 rounded"
-                  >Module</span>
-                  <span
-                    *ngIf="node.type === 'submodule'"
-                    class="text-[10px] uppercase font-bold tracking-widest text-purple-400"
-                  >Section</span>
-                </label>
-              </div>
-
-              <!-- Children -->
-              <div
-                *ngIf="node.expanded && node.children && node.children.length > 0"
-                class="flex flex-col border-l-2 border-indigo-100 ml-4 pl-2 mt-1"
-              >
-                <ng-container *ngFor="let child of node.children">
-                  <ng-container *ngTemplateOutlet="moduleNode; context: {node: child, level: level + 1}"></ng-container>
-                </ng-container>
-              </div>
-
-            </div>
-          </ng-template>
-
-          <ng-container *ngFor="let rootNode of moduleHierarchy">
-            <ng-container *ngTemplateOutlet="moduleNode; context: {node: rootNode, level: 0}"></ng-container>
-          </ng-container>
-
-        </div>
-      </div>
-
-      <!-- Client Summary Card -->
-      <div
-        *ngIf="selectedClientId && getSelectedClient()"
-        class="relative p-6 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl border-2 border-indigo-400/30 overflow-hidden shadow-xl"
-      >
-        <div class="absolute inset-0 opacity-10">
-          <div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full filter blur-2xl"></div>
-        </div>
-        <div class="relative z-10">
-          <p class="text-sm font-black text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-            <svg
-              class="w-5 h-5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            Client Information
-          </p>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-1">
-              <span class="text-indigo-200 text-xs font-bold block uppercase">Contact Person</span>
-              <span class="text-white font-bold text-sm">{{ getSelectedClient()?.contactPerson }}</span>
-            </div>
-            <div class="space-y-1">
-              <span class="text-indigo-200 text-xs font-bold block uppercase">Email</span>
-              <span class="text-white font-bold text-sm break-all">{{ getSelectedClient()?.email }}</span>
-            </div>
-            <div class="space-y-1">
-              <span class="text-indigo-200 text-xs font-bold block uppercase">Phone</span>
-              <span class="text-white font-bold text-sm">{{ getSelectedClient()?.contactNumber }}</span>
-            </div>
-            <div
-              *ngIf="getSelectedClient()?.address"
-              class="space-y-1"
-            >
-              <span class="text-indigo-200 text-xs font-bold block uppercase">Address</span>
-              <span class="text-white font-bold text-xs">{{ getSelectedClient()?.address }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Premium Generate Button -->
-      <button
-        (click)="handleGenerate()"
-        class="group relative w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-black py-5 px-8 rounded-2xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 overflow-hidden border-2 border-white/20"
-      >
-        <div
-          class="absolute inset-0 bg-gradient-to-r from-pink-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        ></div>
-        <div class="relative z-10 flex items-center justify-center gap-3">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6 group-hover:rotate-180 transition-transform duration-500"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
-          <span class="text-lg tracking-wide">{{ isEditing ? 'UPDATE & RENEW KEY' : 'GENERATE SECURE KEY' }}</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </div>
-      </button>
-    </div>
-  </div>
-
-  <!-- Generated Keys Display with Premium Design -->
-  <div
-    class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-emerald-100/50 animate-fadeIn hover:shadow-emerald-200/50 transition-all duration-500"
-  >
-    <!-- Premium Card Header -->
-    <div class="relative bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 px-8 py-8 overflow-hidden">
-      <!-- Animated background elements -->
-      <div class="absolute inset-0 opacity-20">
-        <div
-          class="absolute top-0 left-0 w-40 h-40 bg-white rounded-full mix-blend-overlay filter blur-2xl animate-pulse"
-        ></div>
-        <div
-          class="absolute bottom-0 right-0 w-32 h-32 bg-cyan-300 rounded-full mix-blend-overlay filter blur-2xl animate-pulse"
-          style="animation-delay: 0.7s"
-        ></div>
-      </div>
-
-      <div class="relative z-10">
-        <div class="flex items-center gap-4">
-          <div class="p-3 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/30 shadow-xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-7 w-7 text-white"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-            >
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
-          </div>
-          <div>
-            <h3 class="text-2xl font-black text-white">Generated Keys</h3>
-            <p class="text-sm text-emerald-100 mt-1 font-medium">Recently created access credentials ({{
-              generatedKeys.length }})</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Keys Content with Premium Design -->
-    <div
-      class="px-8 py-8 space-y-6 bg-gradient-to-br from-white to-emerald-50/30 min-h-[400px] max-h-[calc(100vh-300px)] overflow-y-auto"
-    >
-      <!-- Empty State with Modern Design -->
-      <div
-        *ngIf="generatedKeys.length === 0"
-        class="flex flex-col items-center justify-center py-16"
-      >
-        <div class="relative mb-6">
-          <div
-            class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full blur-2xl opacity-20 animate-pulse"
-          ></div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="relative h-24 w-24 text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+        
+        <div class="space-y-4">
+          <label class="font-section-label text-[11px] text-on-surface-variant uppercase ml-1 block">EXPIRATION DATE</label>
+          <div class="relative">
+            <input 
+              type="date"
+              [(ngModel)]="expirationDate"
+              [min]="getTodayDate()"
+              class="w-full bg-white/50 border border-outline-variant rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-md" 
             />
-          </svg>
+          </div>
         </div>
-        <p class="text-gray-400 font-black text-lg mb-2">No Keys Generated Yet</p>
-        <p class="text-gray-400 text-sm">Create your first access key using the form</p>
-      </div>
-
-      <!-- Keys List -->
-      <div
-        *ngIf="generatedKeys.length > 0"
-        class="space-y-5"
-      >
-        <div
-          *ngFor="let keyData of generatedKeys; let i = index"
-          class="p-6 border-2 border-green-200 rounded-lg space-y-4 bg-gradient-to-br from-green-50 to-emerald-50 hover:shadow-md transition-all duration-300 transform hover:scale-102 animate-slideInDown"
-          [style.animation-delay]="(0.15 + i * 0.05) + 's'"
-        >
-
-          <!-- Company and Plan Header -->
-          <div class="flex items-center justify-between pb-3 border-b border-green-100">
-            <div>
-              <h4 class="font-bold text-gray-900 text-lg">{{ keyData.clientName }}</h4>
-              <p class="text-xs text-gray-500 mt-1">Plan: {{ getPlanName(keyData.plan) }}</p>
-            </div>
-            <span
-              class="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs font-bold rounded-full"
-            >
-              {{ getPlanName(keyData.plan) }}
-            </span>
-          </div>
-
-          <!-- Key Copy Section -->
-          <div class="space-y-2">
-            <p class="text-xs font-bold text-gray-700 uppercase tracking-wide">Access Key</p>
-            <div class="flex items-center gap-2">
-              <div
-                class="flex items-center justify-between bg-white p-3 rounded-lg border-2 border-green-200 group hover:border-green-400 transition-colors flex-1 overflow-hidden"
-              >
-                <code class="text-xs font-mono text-gray-700 truncate block">{{ keyData.key }}</code>
-                <button
-                  (click)="handleCopyKey(keyData.key || '')"
-                  class="p-2 hover:bg-green-100 rounded-lg transition-colors ml-2 flex-shrink-0"
-                  [title]="copiedKey === keyData.key ? 'Copied!' : 'Copy key'"
-                >
-                  <svg
-                    *ngIf="copiedKey !== keyData.key"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 text-gray-600"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect
-                      x="8"
-                      y="2"
-                      width="8"
-                      height="4"
-                      rx="1"
-                      ry="1"
-                    ></rect>
-                  </svg>
-                  <svg
-                    *ngIf="copiedKey === keyData.key"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 text-green-600 animate-pulse"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                </button>
-              </div>
-              <button
-                (click)="viewKeyDetails(keyData.key || '')"
-                class="p-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-md flex-shrink-0"
-                title="Decrypt & View Details"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <!-- Tracking Information (New) -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
-            <div class="space-y-1">
-              <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest block">Device ID</span>
-              <div class="flex items-center gap-1.5">
-                <div [class]="keyData.deviceId ? 'w-2 h-2 bg-emerald-500 rounded-full animate-pulse' : 'w-2 h-2 bg-gray-300 rounded-full'"></div>
-                <span class="text-xs font-mono font-bold text-gray-700 truncate block max-w-[120px]" [title]="keyData.deviceId || 'Not bound yet'">
-                  {{ keyData.deviceId || 'Unbound' }}
-                </span>
-              </div>
-            </div>
-            <div class="space-y-1 border-x border-gray-100 px-3">
-              <span class="text-[10px] font-black text-purple-400 uppercase tracking-widest block">Usage Count</span>
-              <span class="text-xs font-black text-gray-900 flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <path d="M12 20v-6M6 20V10M18 20V4"/>
-                </svg>
-                {{ keyData.usageCount || 0 }} logins
-              </span>
-            </div>
-            <div class="space-y-1">
-              <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest block">Last Active IP</span>
-              <span class="text-xs font-bold text-gray-700 font-mono">{{ keyData.lastIp || '0.0.0.0' }}</span>
-            </div>
-          </div>
-
-          <!-- Decrypted Payload Display -->
-          <div
-            *ngIf="selectedKeyDetails && selectedKeyDetails.rawKey === keyData.key"
-            class="bg-indigo-900/95 backdrop-blur-md p-5 rounded-xl border-t-4 border-indigo-400 shadow-2xl animate-fadeIn space-y-4"
-          >
-            <div class="flex items-center justify-between">
-              <h5 class="text-white font-black text-xs uppercase tracking-widest flex items-center gap-2">
-                <span class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
-                Decrypted Payload (ERP View)
-              </h5>
-              <button
-                (click)="selectedKeyDetails = null"
-                class="text-indigo-300 hover:text-white transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="3"
-                >
-                  <path d="M18 6L6 18M6 6l12 12"></path>
-                </svg>
-              </button>
-            </div>
-
-            <div class="grid grid-cols-1 gap-2">
-              <div class="flex justify-between items-center py-2 border-b border-indigo-800/50">
-                <span class="text-indigo-300 text-[10px] font-bold uppercase">Plan Type</span>
-                <span class="text-white font-bold text-xs">{{ selectedKeyDetails.Plan }}</span>
-              </div>
-              <div class="flex justify-between items-center py-2 border-b border-indigo-800/50">
-                <span class="text-indigo-300 text-[10px] font-bold uppercase">Expires On</span>
-                <span class="text-white font-bold text-xs">{{ selectedKeyDetails.ExpirationDate }}</span>
-              </div>
-              <div class="flex justify-between items-center py-2 border-b border-indigo-800/50">
-                <span class="text-indigo-300 text-[10px] font-bold uppercase">Company</span>
-                <span class="text-white font-bold text-xs">{{ selectedKeyDetails.CompanyName }}</span>
-              </div>
-              <div class="flex justify-between items-center py-2">
-                <span class="text-indigo-300 text-[10px] font-bold uppercase">Module Count</span>
-                <span class="text-white font-bold text-xs">{{ selectedKeyDetails.Modules?.length || 0 }} Areas</span>
-              </div>
-
-              <div class="mt-2 p-3 bg-black/30 rounded-lg">
-                <p class="text-[10px] text-indigo-400 font-bold uppercase mb-2">RAW JSON (For Debugging)</p>
-                <div class="max-h-40 overflow-y-auto custom-scrollbar">
-                  <pre class="text-indigo-200 text-[10px] whitespace-pre-wrap font-mono">{{ selectedKeyDetails | json }}
-                  </pre>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Modules -->
-          <div class="space-y-2">
-            <p class="text-xs font-bold text-gray-700 uppercase tracking-wide">Modules</p>
-            <div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-              <span
-                *ngFor="let module of keyData.modules"
-                class="text-[10px] font-bold bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 px-3 py-1 rounded-full border border-purple-200 whitespace-nowrap"
-              >
-                {{ module.label }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Contact Details -->
-          <div class="space-y-2 text-xs">
-            <p class="font-bold text-gray-700 uppercase tracking-wide mb-2">Contact Details</p>
-            <div class="grid grid-cols-2 gap-3 bg-white p-3 rounded-lg border border-green-100">
-              <div>
-                <span class="text-gray-500 text-xs font-bold block">Contact Person</span>
-                <span class="text-gray-900 font-medium">{{ keyData.contactPerson }}</span>
-              </div>
-              <div>
-                <span class="text-gray-500 text-xs font-bold block">Email</span>
-                <span class="text-gray-900 font-medium break-all">{{ keyData.email }}</span>
-              </div>
-              <div>
-                <span class="text-gray-500 text-xs font-bold block">Phone</span>
-                <span class="text-gray-900 font-medium">{{ keyData.contactNumber }}</span>
-              </div>
-              <div *ngIf="keyData.address">
-                <span class="text-gray-500 text-xs font-bold block">Address</span>
-                <span class="text-gray-900 font-medium text-xs break-words">{{ keyData.address }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Renewal and Edit Actions -->
-          <div class="flex items-center gap-2 pt-2">
-            <button
-              (click)="handleQuickRenew(keyData, $event)"
-              class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black rounded-lg transition-all shadow-sm hover:shadow-md cursor-pointer"
-              title="Quickly extend expiration date by 1 year"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-              </svg>
-              <span>Quick Renew (+1 Yr)</span>
+        
+        <div class="col-span-2 mt-2">
+          <label class="font-section-label text-[11px] text-on-surface-variant uppercase ml-1 mb-3 block">QUICK EXPIRATION PRESET</label>
+          <div class="flex flex-wrap gap-2">
+            <button (click)="applyDatePreset(30)" type="button" class="px-3 py-1.5 bg-surface-container-low border border-outline-variant/30 rounded-lg text-body-md flex items-center gap-2 hover:bg-white transition-all hover:shadow-sm cursor-pointer">
+              <span class="text-lg">📅</span> 30 Days
             </button>
-            <button
-              (click)="handleCloneAndEdit(keyData, $event)"
-              class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs font-black rounded-lg transition-all shadow-sm hover:shadow-md cursor-pointer"
-              title="Populate generator to modify modules or date"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"/>
-              </svg>
-              <span>Edit & Renew</span>
+            <button (click)="applyDatePreset(90)" type="button" class="px-3 py-1.5 bg-surface-container-low border border-outline-variant/30 rounded-lg text-body-md flex items-center gap-2 hover:bg-white transition-all hover:shadow-sm cursor-pointer">
+              <span class="text-lg">🗓️</span> 90 Days
             </button>
-          </div>
-
-          <!-- Dates Footer -->
-          <div class="grid grid-cols-3 gap-3 pt-3 border-t border-green-100 text-xs">
-            <div class="flex items-center gap-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-gray-600"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              <div>
-                <span class="text-gray-500 block">Expires</span>
-                <span class="font-bold text-gray-900">{{ formatDate(keyData.expirationDate) }}</span>
-              </div>
-            </div>
-            <div>
-              <span class="text-gray-500 block">Status</span>
-              <span
-                [ngClass]="getExpirationStatusClass(keyData.expirationDate)"
-                class="block"
-              >
-                {{ getExpirationText(keyData.expirationDate) }}
-              </span>
-            </div>
-            <div>
-              <span class="text-gray-500 block">Generated</span>
-              <!-- <span class="text-gray-900 font-medium block">{{ formatDateTime(keyData.cli) }}</span> -->
-            </div>
+            <button (click)="applyDatePreset(365)" type="button" class="px-3 py-1.5 bg-primary-container/10 border border-primary/30 rounded-lg text-primary font-bold text-body-md flex items-center gap-2 cursor-pointer">
+              <span class="text-lg">📆</span> 1 Year
+            </button>
+            <button (click)="applyLifetimePreset()" type="button" class="px-3 py-1.5 bg-surface-container-low border border-outline-variant/30 rounded-lg text-body-md flex items-center gap-2 hover:bg-white transition-all hover:shadow-sm cursor-pointer">
+              <span class="text-lg">🛡️</span> 5 Years
+            </button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <hr class="border-outline-variant/20" />
+
+  <!-- SECTION 2: ACCESS AREAS -->
+  <section class="space-y-6 pb-8">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm">2</span>
+        <h2 class="font-section-label text-section-label text-on-surface tracking-widest uppercase">ACCESS AREAS & PERMISSIONS</h2>
+      </div>
+      <div class="bg-primary/10 text-primary px-3 py-1 rounded-full font-bold text-[12px] flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        {{ getSelectedModulesCount() }} Selected
+      </div>
+    </div>
+    
+    <div class="space-y-4">
+      <label class="font-section-label text-[11px] text-on-surface-variant uppercase ml-1 block">MODULE PRESETS</label>
+      <div class="flex flex-wrap gap-3">
+        <button (click)="applyPreset('pharmacy')" type="button" class="px-4 py-2 rounded-xl bg-white border border-outline-variant/50 shadow-sm flex items-center gap-2 hover:border-generator-pink transition-all cursor-pointer">
+          <span class="text-lg">💊</span> <span class="font-bold text-body-md">Pharmacy</span>
+        </button>
+        <button (click)="applyPreset('optical')" type="button" class="px-4 py-2 rounded-xl bg-white border border-outline-variant/50 shadow-sm flex items-center gap-2 hover:border-list-cyan transition-all cursor-pointer">
+          <span class="text-lg">👓</span> <span class="font-bold text-body-md">Optical</span>
+        </button>
+        <button (click)="applyPreset('supermarket')" type="button" class="px-4 py-2 rounded-xl bg-white border border-outline-variant/50 shadow-sm flex items-center gap-2 hover:border-list-teal transition-all cursor-pointer">
+          <span class="text-lg">🛒</span> <span class="font-bold text-body-md">Supermarket</span>
+        </button>
+        <button (click)="applyPreset('autoparts')" type="button" class="px-4 py-2 rounded-xl bg-white border border-outline-variant/50 shadow-sm flex items-center gap-2 hover:border-primary transition-all cursor-pointer">
+          <span class="text-lg">⚙️</span> <span class="font-bold text-body-md">Auto Parts</span>
+        </button>
+        <button (click)="applyPreset('all')" type="button" class="px-4 py-2 rounded-xl bg-secondary-container/20 text-secondary border border-secondary/30 font-bold text-body-md hover:bg-secondary-container/40 transition-all cursor-pointer">
+          Select All
+        </button>
+        <button (click)="applyPreset('clear')" type="button" class="px-4 py-2 rounded-xl bg-error-container/20 text-error border border-error/30 font-bold text-body-md hover:bg-error-container/40 transition-all cursor-pointer">
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Accordion List -->
+    <div class="space-y-3">
+      <!-- Category 1: Core & Utilities Accordion -->
+      <div class="border border-outline-variant/50 rounded-2xl overflow-hidden bg-white/40">
+        <button
+          type="button"
+          (click)="expandedCoreGroup = !expandedCoreGroup"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-white/60 transition-colors cursor-pointer"
+        >
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-on-surface-variant">settings_input_component</span>
+            <div class="text-left">
+              <p class="font-bold text-body-md uppercase tracking-wide">CORE & UTILITY MODULES</p>
+              <p class="text-[11px] text-on-surface-variant">(dashboard, settings, accounts, barcode, reports)</p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined transition-transform" [class.rotate-180]="expandedCoreGroup">expand_more</span>
+        </button>
+        <div *ngIf="expandedCoreGroup" class="px-6 py-4 bg-white/60 border-t border-outline-variant/30 animate-fadeIn">
+          <div class="flex flex-col gap-1">
+            <ng-container *ngFor="let rootNode of moduleHierarchy">
+              <ng-container *ngIf="isCoreModule(rootNode.id)">
+                <ng-container *ngTemplateOutlet="nestedModuleNode; context: {node: rootNode, level: 0}"></ng-container>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category 2: Unified Transactions Accordion -->
+      <div class="border border-outline-variant/50 rounded-2xl overflow-hidden bg-white/40">
+        <button
+          type="button"
+          (click)="expandedTransactionsGroup = !expandedTransactionsGroup"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-white/60 transition-colors cursor-pointer"
+        >
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-on-surface-variant">credit_score</span>
+            <div class="text-left">
+              <p class="font-bold text-body-md uppercase tracking-wide">UNIFIED TRANSACTIONS</p>
+              <p class="text-[11px] text-on-surface-variant">(POS terminal, online payments, gift cards, loyalty)</p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined transition-transform" [class.rotate-180]="expandedTransactionsGroup">expand_more</span>
+        </button>
+        <div *ngIf="expandedTransactionsGroup" class="px-6 py-4 bg-white/60 border-t border-outline-variant/30 animate-fadeIn">
+          <div class="flex flex-col gap-1">
+            <ng-container *ngFor="let rootNode of moduleHierarchy">
+              <ng-container *ngIf="isTransactionModule(rootNode.id)">
+                <ng-container *ngTemplateOutlet="nestedModuleNode; context: {node: rootNode, level: 0}"></ng-container>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category 3: Specialized Stores / Industry Verticals -->
+      <div class="border border-outline-variant/50 rounded-2xl overflow-hidden bg-white/40">
+        <button
+          type="button"
+          (click)="expandedIndustriesGroup = !expandedIndustriesGroup"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-white/60 transition-colors cursor-pointer"
+        >
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-on-surface-variant">storefront</span>
+            <div class="text-left">
+              <p class="font-bold text-body-md uppercase tracking-wide">SPECIALIZED STORES / INDUSTRY VERTICALS</p>
+              <p class="text-[11px] text-on-surface-variant">(pharmacy management, clinical ops, wholesale distribution)</p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined transition-transform" [class.rotate-180]="expandedIndustriesGroup">expand_more</span>
+        </button>
+        <div *ngIf="expandedIndustriesGroup" class="px-6 py-4 bg-white/60 border-t border-outline-variant/30 animate-fadeIn">
+          <div class="flex flex-col gap-1">
+            <ng-container *ngFor="let rootNode of moduleHierarchy">
+              <ng-container *ngIf="isIndustryModule(rootNode.id)">
+                <ng-container *ngTemplateOutlet="nestedModuleNode; context: {node: rootNode, level: 0}"></ng-container>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="border-outline-variant/20" />
+
+  <!-- SECTION 3: REVIEW & DEPLOY -->
+  <section class="space-y-6 pb-12">
+    <div class="flex items-center gap-3">
+      <span class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm">3</span>
+      <h2 class="font-section-label text-section-label text-on-surface tracking-widest uppercase">REVIEW & DEPLOY</h2>
+    </div>
+    
+    <!-- Fallback / Success Review Blocks -->
+    <div *ngIf="!selectedClientId" class="bg-primary-container/10 border border-primary/20 rounded-2xl p-6 flex items-center gap-4">
+      <span class="material-symbols-outlined text-primary text-3xl">info</span>
+      <p class="text-body-md font-bold text-primary tracking-wide uppercase">SELECT A CLIENT TO REVIEW DEPLOYMENT DETAILS</p>
+    </div>
+
+    <div *ngIf="selectedClientId && getSelectedClient()" class="bg-primary-container/10 border border-primary/20 rounded-2xl p-6 space-y-3 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full filter blur-2xl"></div>
+      </div>
+      <div class="relative z-10 flex justify-between items-start border-b border-primary/20 pb-2">
+        <div>
+          <span class="text-[9px] font-black text-primary uppercase tracking-widest block">Deploying To</span>
+          <span class="text-sm font-extrabold text-on-surface">{{ getSelectedClient()?.companyName }}</span>
+        </div>
+        <span class="px-2.5 py-1 bg-white/50 text-primary text-[9px] uppercase font-black tracking-widest rounded border border-primary/20">
+          {{ plan || 'No Plan Selected' }}
+        </span>
+      </div>
+      <div class="relative z-10 grid grid-cols-2 gap-3 text-[11px]">
+        <div>
+          <span class="text-primary text-[9px] uppercase font-bold block">Valid Until</span>
+          <span class="text-on-surface font-medium">{{ expirationDate ? formatDate(expirationDate) : 'Not specified' }}</span>
+        </div>
+        <div>
+          <span class="text-primary text-[9px] uppercase font-bold block">Authorized Features</span>
+          <span class="text-on-surface font-semibold flex items-center gap-1.5">
+            ⚡ {{ getSelectedModulesCount() }} modules selected
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-col gap-4">
+      <button 
+        (click)="handleGenerate()"
+        [disabled]="!selectedClientId"
+        [class.opacity-50]="!selectedClientId"
+        [class.cursor-not-allowed]="!selectedClientId"
+        class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-black text-lg shadow-xl hover:scale-[1.01] transition-all flex items-center justify-center gap-3 cursor-pointer"
+      >
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+        {{ isEditing ? 'UPDATE & RENEW KEY' : 'DEPLOY ACCESS KEY' }}
+      </button>
+      <div class="flex justify-center">
+        <button type="button" class="text-on-surface-variant font-bold text-sm hover:text-primary transition-all cursor-pointer">
+          Reset Form and Discard Progress
+        </button>
+      </div>
+    </div>
+  </section>
 </div>
+
+<!-- Hierarchical Module Node Template mapping nested nodes to proper tree layout -->
+<ng-template #nestedModuleNode let-node="node" let-level="level">
+  <div class="flex flex-col" [ngClass]="{'mt-2': level === 0, 'ml-8 border-l-2 border-outline-variant/30 pl-4 mt-1': level > 0}">
+    <div class="flex items-center gap-3 p-2 bg-white rounded-xl border border-outline-variant/20 hover:border-primary/50 transition-all group relative hover:shadow-sm">
+      
+      <!-- Expand/Collapse Button for Parents -->
+      <button 
+        *ngIf="node.children && node.children.length > 0"
+        (click)="toggleNodeExpand(node)"
+        type="button"
+        class="w-6 h-6 flex items-center justify-center rounded bg-surface-container-high hover:bg-primary hover:text-white text-on-surface-variant transition-colors z-10 cursor-pointer shadow-sm border border-outline-variant/20"
+      >
+        <span class="text-[10px] font-black">{{ node.expanded ? '▼' : '▶' }}</span>
+      </button>
+      
+      <!-- Spacer for leaf nodes to align with parents -->
+      <div *ngIf="!node.children || node.children.length === 0" class="w-6 h-6"></div>
+
+      <label class="flex flex-1 items-center gap-3 cursor-pointer select-none">
+        <input 
+          type="checkbox"
+          [(ngModel)]="node.selected"
+          (ngModelChange)="onNodeSelectionChange(node)"
+          [indeterminate]="node.indeterminate"
+          class="rounded text-primary focus:ring-primary/20 w-4 h-4 cursor-pointer accent-primary shadow-inner" 
+        />
+        <div class="flex items-center gap-2">
+          <span class="text-body-md font-bold text-on-surface group-hover:text-primary transition-colors">{{ node.label }}</span>
+          <span *ngIf="level === 0" class="text-[9px] uppercase font-black tracking-widest text-on-surface-variant bg-surface-variant px-1.5 py-0.5 rounded-md">Module</span>
+          <span *ngIf="level === 1" class="text-[9px] uppercase font-bold tracking-widest text-primary bg-primary-container/20 px-1.5 py-0.5 rounded-md border border-primary/20">Tab</span>
+        </div>
+      </label>
+    </div>
+    
+    <!-- Render Children Recursively -->
+    <div *ngIf="node.expanded && node.children && node.children.length > 0" class="flex flex-col animate-fadeIn mt-1">
+      <ng-container *ngFor="let child of node.children">
+        <ng-container *ngTemplateOutlet="nestedModuleNode; context: {node: child, level: level + 1}"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>

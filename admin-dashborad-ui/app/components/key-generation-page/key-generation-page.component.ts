@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { KeyGeneratorComponent } from '../key-generator/key-generator.component';
+import { KeyListComponent } from '../key-list/key-list.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Client, GeneratedKey } from '../../../models/types';
 import { DataService } from '../../../services/data.service';
@@ -13,7 +14,13 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-key-generation-page',
   standalone: true,
-  imports: [CommonModule, KeyGeneratorComponent, SidebarComponent, AlertNotificationComponent],
+  imports: [
+    CommonModule,
+    KeyGeneratorComponent,
+    KeyListComponent,
+    SidebarComponent,
+    AlertNotificationComponent
+  ],
   templateUrl: './key-generation-page.component.html',
   styleUrls: ['./key-generation-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,6 +29,11 @@ export class KeyGenerationPageComponent implements OnInit, OnDestroy {
   clients: Client[] = [];
   generatedKeys: GeneratedKey[] = [];
   sidebarOpen = false;
+  
+  // Tab Management State
+  activeTab: 'generate' | 'list' = 'generate';
+  keyToEdit: GeneratedKey | null = null;
+  
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -65,6 +77,26 @@ export class KeyGenerationPageComponent implements OnInit, OnDestroy {
     this.router.navigate(['/logout']);
   }
 
+  setActiveTab(tab: 'generate' | 'list'): void {
+    this.activeTab = tab;
+    // Clear editing state if navigating away from generate
+    if (tab === 'list') {
+      this.keyToEdit = null;
+    }
+    this.cdr.markForCheck();
+  }
+
+  handleEditKey(keyData: GeneratedKey): void {
+    this.keyToEdit = keyData;
+    this.activeTab = 'generate';
+    this.cdr.markForCheck();
+  }
+
+  handleCancelEdit(): void {
+    this.keyToEdit = null;
+    this.cdr.markForCheck();
+  }
+
   handleGenerateKey(keyData: any): void {
     const { clientId, ...displayData } = keyData;
     const backendRequest = {
@@ -81,6 +113,8 @@ export class KeyGenerationPageComponent implements OnInit, OnDestroy {
         } else {
           this.alertService.success('Access key generated successfully!');
           this.dataService.loadGeneratedKeys(); // Refresh list
+          this.keyToEdit = null;
+          this.activeTab = 'list'; // Switch tab to key list so they don't have to scroll or hunt
         }
         this.cdr.markForCheck();
       },

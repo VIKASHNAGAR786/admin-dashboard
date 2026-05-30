@@ -1,55 +1,78 @@
+<!-- Background Decorative Blobs -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+  <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] animate-blob"></div>
+  <div class="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-generator-pink/10 rounded-full blur-[100px] animate-blob" style="animation-delay: 2s"></div>
+  <div class="absolute top-[40%] left-[20%] w-[300px] h-[300px] bg-secondary/10 rounded-full blur-[80px] animate-blob" style="animation-delay: 4s"></div>
+</div>
+
 <!-- Sidebar -->
 <app-sidebar [isOpen]="sidebarOpen" (toggleSidebar)="handleToggleSidebar()"></app-sidebar>
 
-<!-- Main Layout -->
 <div class="main-layout" [class.sidebar-open]="sidebarOpen">
-  <!-- Premium Header -->
-  <div class="relative bg-gradient-to-br from-indigo-600 via-blue-700 to-indigo-800 shadow-2xl overflow-hidden">
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute top-0 left-0 w-96 h-96 bg-purple-400 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+  <!-- TOP BAR -->
+  <header class="bg-gradient-to-r from-header-start via-header-mid to-header-end flex justify-between items-center px-container-padding w-full z-40 backdrop-blur-md bg-white/10 shadow-md h-toolbar-height flex-shrink-0">
+    <div class="flex flex-col">
+      <h1 class="text-headline-lg font-headline-lg font-black text-on-primary tracking-tight">Key Management Control Room</h1>
+      <p class="text-body-md font-body-md text-on-primary/70 -mt-1">Provision client licenses and monitor connections</p>
     </div>
-    
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-      <div class="flex items-center justify-between">
-        <div class="text-white space-y-3">
-          <div class="flex items-center gap-4">
-            <div class="relative p-3 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/30 shadow-xl">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <div>
-              <h1 class="text-4xl font-black tracking-tight text-white">Key Management</h1>
-              <p class="text-blue-100 text-sm font-medium mt-1">Generate and monitor secure access keys</p>
-            </div>
-          </div>
-        </div>
-        
+    <div class="flex items-center gap-4">
+      <button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-on-primary font-nav-tab hover:bg-white/20 transition-all active:scale-95 border border-white/20 cursor-pointer">
+        <span class="material-symbols-outlined text-[20px]">settings</span>
+      </button>
+      <button (click)="handleLogout()" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-primary font-nav-tab font-bold hover:bg-surface-bright transition-all active:scale-95 shadow-sm cursor-pointer">
+        <span class="material-symbols-outlined text-[20px]">logout</span>
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 overflow-hidden flex flex-col p-container-padding gap-6 min-h-0 bg-transparent">
+    <!-- Tab Switcher -->
+    <div class="flex justify-center flex-shrink-0">
+      <div class="inline-flex p-1.5 bg-surface-container-high rounded-full shadow-inner border border-outline-variant/20">
         <button
-          (click)="handleLogout()"
-          class="flex items-center gap-3 bg-white/95 text-indigo-700 hover:bg-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-xl hover:scale-105"
+          (click)="setActiveTab('generate')"
+          class="flex items-center gap-2 px-6 py-2.5 rounded-full font-nav-tab transition-all transform cursor-pointer"
+          [ngClass]="activeTab === 'generate' 
+            ? 'bg-gradient-to-r from-generator-purple to-generator-pink text-white active-tab-glow hover:scale-103' 
+            : 'text-on-surface-variant hover:text-primary'"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
-          <span>Logout</span>
+          <span class="material-symbols-outlined text-[18px]">add_circle</span>
+          GENERATE ACCESS KEY
+        </button>
+        <button
+          (click)="setActiveTab('list')"
+          class="flex items-center gap-2 px-6 py-2.5 rounded-full font-nav-tab transition-all transform cursor-pointer"
+          [ngClass]="activeTab === 'list' 
+            ? 'bg-gradient-to-r from-list-cyan to-list-teal text-white shadow-md active-tab-glow hover:scale-103' 
+            : 'text-on-surface-variant hover:text-primary'"
+        >
+          <span class="material-symbols-outlined text-[18px]">key</span>
+          GENERATED KEYS
         </button>
       </div>
     </div>
-  </div>
 
-  <!-- Main Content -->
-  <div class="min-h-screen bg-gray-50/50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Content Canvas -->
+    <div class="flex-1 min-h-0 w-full flex flex-col">
       <app-key-generator
-        [generatedKeys]="generatedKeys"
+        *ngIf="activeTab === 'generate'"
         [clients]="clients"
+        [keyToEdit]="keyToEdit"
         (onGenerateKey)="handleGenerateKey($event)"
+        (onCancelEdit)="handleCancelEdit()"
+        class="h-full w-full flex flex-col min-h-0"
       ></app-key-generator>
+
+      <app-key-list
+        *ngIf="activeTab === 'list'"
+        [generatedKeys]="generatedKeys"
+        (onEditKey)="handleEditKey($event)"
+        class="h-full w-full flex flex-col min-h-0"
+      ></app-key-list>
     </div>
-  </div>
+  </main>
 </div>
 
 <!-- Alert Notification -->

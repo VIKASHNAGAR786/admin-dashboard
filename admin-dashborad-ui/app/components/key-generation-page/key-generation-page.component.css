@@ -1,8 +1,10 @@
-/* Main Layout with Sidebar */
 .main-layout {
   margin-left: 80px;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .main-layout.sidebar-open {
@@ -16,6 +18,26 @@
   .main-layout.sidebar-open {
     margin-left: 0;
   }
+}
+
+/* Custom Webkit Scrollbar styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #c7c4d8;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #777587;
+}
+
+/* Active tab glow effect */
+.active-tab-glow {
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
 }
 
 /* Premium Professional Animations */
